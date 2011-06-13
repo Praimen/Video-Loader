@@ -2,58 +2,96 @@ package
 {
 	import flash.display.SimpleButton;
 	import flash.display.Sprite;
+	import flash.net.NetStream;
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
 	
 	[SWF(backgroundColor="#666666", frameRate="100", width="800", height="450")]
 	public class MediaStatePlayer extends Sprite
-	{			
+	{	
+		
 		private var button:ButtonState
-		private var waiting:WaitingState;
-		private var loadingVideo:LoadingState;
-		private var playing:PlayState;		
-		private var videoState:VideoState;
+		private var createUI:UIGraphics;		
+		private var loading:IVideoState;		
+		private var playing:IVideoState;		
+		private var waiting:IVideoState;
+		
+		private var _loadVideo:LoadVideo;	
+		private var _state:IVideoState;
 		
 		
 		
 		public function MediaStatePlayer(){				
-			init();			
+			init();
 		}
 		
 		/**
 		 * Loads the initial available states and listeners 
 		 * 
 		 */
-		private function init():void{			
+		private function init():void{
 			
-			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.VIDEO_LOADED, setStateLoaded);
-			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.VIDEO_PLAYING, setStatePlaying);
-			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.VIDEO_WAITING, setStateWaiting);				
-			loadVideo();
-		}
+			loading = new LoadingState(this);
+			waiting = new WaitingState(this);
+			playing = new PlayState(this);
+			
+			createUI = new UIGraphics();
+			
+			//GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.VIDEO_PLAYING, setStatePlaying);
+			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.VIDEO_WAITING, setWaiting);
+			
+			initVideo();
+			
+		}		
+			
 		
-		private function loadVideo():void{			
-			videoState = new LoadingState;
+		private function initVideo():void{
+			
+			state = loading;			
+			
 			var buttonArray:Array = new Array()
 				buttonArray = ["ortho","pedo","pedo2"];				
-				videoState.addButtons(buttonArray);
+				createUI.addButtons(buttonArray);				
 				
-			this.addChild(videoState)
+				_loadVideo = new LoadVideo("http://www.drvollenweider.com/Portals/_default/Skins/siteSkin/videos/Cue_1.flv",800,400);
+				_loadVideo.videoPlayPercent = 15;
+				addChild(_loadVideo.video);				
+			state.applyState();
+		}
+				
+		
+		public function setPlaying():void{			
+			state = playing;	
+			state.applyState();
 		}
 		
-		private function setStateLoaded(event:GlobalEvent):void{			
-			
+		private function setWaiting(event:GlobalEvent):void{
+			state = waiting;
+			state.applyState();
 		}
 		
-		private function setStatePlaying(event:GlobalEvent):void{			
-			videoState = new PlayState;	
-			
+		
+///////////////////////////////setters and getters//////////////////////
+		
+		public function get video():LoadVideo{
+			return _loadVideo; 
 		}
 		
-		private function setStateWaiting(event:GlobalEvent):void{
-			videoState = new WaitingState;
+		public function get videoStream():NetStream{
+			return _loadVideo.stream;
+		}
+		
+		
+		public function set state(value:IVideoState):void{
 			
+			_state = value;
+		}
+		
+		public function get state():IVideoState{
+			
+			return _state;
 		}	
+		
 		
 		
 	}//end Class

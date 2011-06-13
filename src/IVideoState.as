@@ -4,9 +4,8 @@ package
 
 	public interface IVideoState
 	{
-		function buttonState():void;
-		function set state(value:IVideoState):void;
-		function get state():IVideoState;
+		function applyState():void;
 		
-	}
-}
+		
+	}//end Class
+}//end Package

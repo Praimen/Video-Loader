@@ -2,15 +2,17 @@ package
 {
 	
 	
-	public class WaitingState extends VideoState
+	public class WaitingState implements IVideoState
 	{
-		public function WaitingState()
+		public function WaitingState(msObject:MediaStatePlayer)
 		{
 			
 			
 		}
 		
-		
+		public function applyState():void{			
+			trace("waiting applied");
+		}
 		
 	}//end Class
 }//end Package

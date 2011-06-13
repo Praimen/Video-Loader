@@ -8,24 +8,23 @@ package
 	import flash.utils.Timer;
 	
 		
-	public class LoadingState extends VideoState implements IVideoState
+	public class LoadingState implements IVideoState
 	{
 		
 		private var bandwidthChecker:BandwidthChecker;
 		
 		private var bandwidthVideoSize:String;
 		private var intervalTimer:Timer = new Timer(1000);
+		private var _media:MediaStatePlayer;
 		
-		public function LoadingState()
+		public function LoadingState(msObject:MediaStatePlayer)
 		{	
-						
-			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.BANDWIDTH_COMPLETE, setBandwidth);
-			//if not checked already
-			checkBandwidth();
+			_media = msObject;		
+			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.BANDWIDTH_COMPLETE, setBandwidth);					
 		}
 		
-		override public function buttonState():void{			
-			trace("actiate button here");
+		public function applyState():void{			
+			checkBandwidth();
 		}
 	
 		protected function checkBandwidth():void{
@@ -37,40 +36,28 @@ package
 			trace("bandwith complete")
 			GlobalDispatcher.GetInstance().removeEventListener(GlobalEvent.BANDWIDTH_COMPLETE, setBandwidth);
 			bandwidthVideoSize = bandwidthChecker.bandwidth;
-			startInitVideo();
+			startLoadTimer();
 		}
 		
-		override protected function startInitVideo():void{
-			super.startInitVideo();		
-			loadVideo.videoPlayPercent = 15;
+		private function startLoadTimer():void{			
 			intervalTimer.addEventListener(TimerEvent.TIMER,checkVideo);
 			intervalTimer.start();
 			
 		}		
 		
 		private function checkVideo(tEvent:TimerEvent):void{	
-			trace("check video "+ loadVideo.currentPercentLoaded);
-			if(loadVideo.currentPercentLoaded > loadVideo.videoPlayPercent){	
+			trace("check video "+ _media.video.currentPercentLoaded);
+			if(_media.video.currentPercentLoaded > _media.video.videoPlayPercent){	
 				intervalTimer.removeEventListener(TimerEvent.TIMER, checkVideo);
 				intervalTimer = null;
-				GlobalDispatcher.GetInstance().dispatchEvent(new GlobalEvent(GlobalEvent.VIDEO_PLAYING));
+				_media.setPlaying();
 			}
 		}
 		
-		//these override supply information to base class so it can acccessed by desendant 
-		//classes
 		
-		/*override public function set video(value:Video):void{			
-			super.video = loadVideo.video;			
-		}
+	
 		
-		override public function get video():Video{
-			return super.video;
-		}*/
 		
-		/*override public function set videoStream(value:NetStream):void{
-			super.videoStream = super.loadVideo.stream;
-		}*/
 		
 		
 		

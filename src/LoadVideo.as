@@ -44,6 +44,7 @@ package
 		private function addEvents():void{	
 			
 			listener.onPlayStatus = function(evt:Object):void {};//prevents some suplerfulous error messages
+			listener.onMetaData = function(evt:Object):void {};
 			_ns.client = listener;
 			_ns.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
 			addEventListener(Event.ENTER_FRAME, onEnterFrame);
@@ -107,5 +108,5 @@ package
 		}
 		
 		
-	}
-}
+	}//end Class
+}//end Package
