@@ -13,12 +13,14 @@ package
 		private var nc:NetConnection;
 		private var _ns:NetStream;
 	
-		private var listener:Object = new Object();	
-		private var videoStatus:String;
-		private var videoURL:String;
+		private var customClient:Object = new Object();
+		private var _cuePoints:Array = new Array();
 		private var _currentVideoTime:Number;
 		private var _loadedPercent:uint;
 		private var _startPlayPercent:uint;
+		private var videoStatus:String;
+		private var videoURL:String;
+		
 			
 		public function LoadVideo(videoString:String, width:Number,height:Number)
 		{
@@ -33,22 +35,55 @@ package
 			
 		}
 		
+		private function addEvents():void{	
+			
+			customClient.onCuePoint = cuePointHandler;
+			customClient.onMetaData = metaDataHandler;
+			
+			_ns.client = customClient;
+			
+			_ns.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+			addEventListener(Event.ENTER_FRAME, onEnterFrame);
+			playVideo();
+		}
+		
 		private function playVideo():void{
 			_vid.smoothing = true;				
 			_vid.attachNetStream(_ns);
 			//_vid.x = stage.stageWidth - (_vid.width/1.5);//custom positioning of video				
 			_ns.play(videoURL);	
 			
+		}		
+		
+		
+		private function cuePointHandler(infoObject:Object):void {
+		/*	for (var propName:String in infoObject) {
+				trace("CuePoint: "+propName + " = " + infoObject[propName]);
+			}
+			
+			CuePoint: type = navigation
+			CuePoint: time = 8.917
+			CuePoint: name = select
+			
+			CuePoint: type = navigation
+			CuePoint: time = 19.75
+			CuePoint: name = loop
+			
+			*/
 		}
 		
-		private function addEvents():void{	
+		private function metaDataHandler(infoObject:Object):void {
+			for (var propName:String in infoObject) {
+				if(propName == "cuePoints"){
+					//trace("MetaData: "+ propName + " = " + infoObject[propName].name);
+					for(var i:Number = 0; i < infoObject.cuePoints.length; i++){
+						var oCue:Object = infoObject.cuePoints[i];
+						trace("\t\t" + i + ": " + oCue.name + ", " + oCue.type+ ", " + oCue.time);
+						_cuePoints[oCue.name] = oCue.time;
+					}
+				}
+			}
 			
-			listener.onPlayStatus = function(evt:Object):void {};//prevents some suplerfulous error messages
-			listener.onMetaData = function(evt:Object):void {};
-			_ns.client = listener;
-			_ns.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
-			addEventListener(Event.ENTER_FRAME, onEnterFrame);
-			playVideo();
 		}
 		
 		private function netStatusHandler(event:NetStatusEvent):void {			
@@ -80,7 +115,7 @@ package
 		}
 		
 		
-		
+		///////////////////////////////setters and getters//////////////////////		
 		
 		public function get stream():NetStream{			
 			return _ns;
@@ -105,6 +140,10 @@ package
 		
 		public function get startPlayPercent():Number{			
 			return _startPlayPercent;
+		}
+		
+		public function get cueArray():Array{
+			return _cuePoints;
 		}
 		
 		

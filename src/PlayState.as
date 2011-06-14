@@ -12,7 +12,7 @@ package
 		public function PlayState(msObject:MediaStatePlayer)
 		{	
 			_media = msObject;
-			trace("playing state");	
+			
 			//trace(super.videoStream);			
 		}
 		

@@ -48,8 +48,9 @@ package
 			
 			uiButtonArray = ui.addButtons(buttonArray);				
 			addChild(ui);
-			_loadVideo = new LoadVideo("http://www.drvollenweider.com/Portals/_default/Skins/siteSkin/videos/Cue_1.flv",800,400);
-			_loadVideo.startPlayPercent = 15;
+			_loadVideo = new LoadVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_400.flv",800,450);
+			//_loadVideo = new LoadVideo("http://www.drvollenweider.com/Portals/_default/Skins/siteSkin/videos/Cue_1.flv",800,450);
+			_loadVideo.startPlayPercent = 8;
 			addChild(_loadVideo.video);	
 			
 			state = loading;

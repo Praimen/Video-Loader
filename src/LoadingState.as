@@ -11,7 +11,7 @@ package
 	public class LoadingState implements IVideoState
 	{		
 		private var bandwidthChecker:BandwidthChecker;		
-		private var bandwidthVideoSize:String;
+		private var _bandwidthVideoSize:String;
 		private var intervalTimer:Timer = new Timer(1000);
 		private var _media:MediaStatePlayer;
 		
@@ -41,7 +41,7 @@ package
 		private function setBandwidth(gEvent:GlobalEvent):void{	
 			trace("bandwith complete")
 			GlobalDispatcher.GetInstance().removeEventListener(GlobalEvent.BANDWIDTH_COMPLETE, setBandwidth);
-			bandwidthVideoSize = bandwidthChecker.bandwidth;
+			_bandwidthVideoSize = bandwidthChecker.bandwidth;
 			startLoadTimer();
 		}
 		
@@ -58,7 +58,15 @@ package
 				intervalTimer = null;
 				_media.setPlaying();
 			}
-		}		
+		}
+		
+
+		///////////////////////////////setters and getters//////////////////////		
+		
+		public function get optVideo():String{
+			
+			return _bandwidthVideoSize;
+		}
 	
 		
 	}//end Class

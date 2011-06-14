@@ -12,7 +12,7 @@ package
 		{
 			
 			_media = msObject;
-			trace("waiting state");	
+			
 			//trace(super.videoStream);			
 		}
 		
