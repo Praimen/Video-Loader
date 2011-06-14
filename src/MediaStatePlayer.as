@@ -9,17 +9,16 @@ package
 	[SWF(backgroundColor="#666666", frameRate="100", width="800", height="450")]
 	public class MediaStatePlayer extends Sprite
 	{	
-		
 		private var button:ButtonState
-		private var createUI:UIGraphics;		
+		private var ui:UIGraphics;
+		private var uiButtonArray:Array;
+		
 		private var loading:IVideoState;		
 		private var playing:IVideoState;		
 		private var waiting:IVideoState;
 		
 		private var _loadVideo:LoadVideo;	
 		private var _state:IVideoState;
-		
-		
 		
 		public function MediaStatePlayer(){				
 			init();
@@ -35,43 +34,48 @@ package
 			waiting = new WaitingState(this);
 			playing = new PlayState(this);
 			
-			createUI = new UIGraphics();
-			
+			ui = new UIGraphics();			
 			//GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.VIDEO_PLAYING, setStatePlaying);
-			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.VIDEO_WAITING, setWaiting);
-			
-			initVideo();
-			
+			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.VIDEO_WAITING, setWaiting);			
+			initVideo();			
 		}		
 			
 		
-		private function initVideo():void{
-			
-			state = loading;			
+		private function initVideo():void{	
 			
 			var buttonArray:Array = new Array()
-				buttonArray = ["ortho","pedo","pedo2"];				
-				createUI.addButtons(buttonArray);				
-				
-				_loadVideo = new LoadVideo("http://www.drvollenweider.com/Portals/_default/Skins/siteSkin/videos/Cue_1.flv",800,400);
-				_loadVideo.videoPlayPercent = 15;
-				addChild(_loadVideo.video);				
+			buttonArray = ["ortho","pedo","pedo2"];
+			
+			uiButtonArray = ui.addButtons(buttonArray);				
+			addChild(ui);
+			_loadVideo = new LoadVideo("http://www.drvollenweider.com/Portals/_default/Skins/siteSkin/videos/Cue_1.flv",800,400);
+			_loadVideo.startPlayPercent = 15;
+			addChild(_loadVideo.video);	
+			
+			state = loading;
 			state.applyState();
+			state.buttonState();
 		}
 				
 		
 		public function setPlaying():void{			
 			state = playing;	
-			state.applyState();
+			state.applyState();	
+			state.buttonState();//kept public for accessiblity of Flash IDE elements
 		}
 		
 		private function setWaiting(event:GlobalEvent):void{
 			state = waiting;
-			state.applyState();
+			state.applyState();			
 		}
 		
 		
 ///////////////////////////////setters and getters//////////////////////
+		
+		public function get buttons():Array{			
+			return uiButtonArray;
+		}
+		
 		
 		public function get video():LoadVideo{
 			return _loadVideo; 

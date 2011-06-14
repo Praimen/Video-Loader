@@ -16,9 +16,9 @@ package
 		private var listener:Object = new Object();	
 		private var videoStatus:String;
 		private var videoURL:String;
-		
-		private var _videoLoadedPercent:uint;
-		private var _videoPlayStartPercent:uint;
+		private var _currentVideoTime:Number;
+		private var _loadedPercent:uint;
+		private var _startPlayPercent:uint;
 			
 		public function LoadVideo(videoString:String, width:Number,height:Number)
 		{
@@ -59,32 +59,27 @@ package
 				case "NetStream.Play.Start":
 					//starts the video as the first inital play through and pauses the video for buffering
 					trace("starting");
-					_ns.pause();	
-					
-					break;
+					_ns.pause();					
+				break;
 				
 				case "NetStream.Buffer.Empty":
 					//when Empty is triggered a array value is stored at that byte count	
-					break;
+				break;
 			}//end Switch			
 			
 		}
 	
 		private function onEnterFrame(e:Event):void{			
-			_videoLoadedPercent = (_ns.bytesLoaded/_ns.bytesTotal) * 100;	
-			
-			if(currentPercentLoaded < videoPlayPercent){
-				//if percentage requirement is met then move to the state of the video to playing
-					
-			}else{
-				_ns.resume();
-				
-			}
+			_loadedPercent = (_ns.bytesLoaded/_ns.bytesTotal) * 100;			
+			_currentVideoTime = _ns.time;
 			
 			if(currentPercentLoaded == 100){
-				removeEventListener(Event.ENTER_FRAME, onEnterFrame);
+				
+				//removeEventListener(Event.ENTER_FRAME, onEnterFrame);
 			}
 		}
+		
+		
 		
 		
 		public function get stream():NetStream{			
@@ -95,16 +90,21 @@ package
 			return _vid;
 		}
 		
+		
+		public function get currentTime():Number{			
+			return _currentVideoTime;
+		}
+		
 		public function get currentPercentLoaded():Number{			
-			return _videoLoadedPercent
+			return _loadedPercent;
 		}
 		
-		public function set videoPlayPercent(value:Number):void{			
-			_videoPlayStartPercent = value
+		public function set startPlayPercent(value:Number):void{			
+			_startPlayPercent = value;
 		}
 		
-		public function get videoPlayPercent():Number{			
-			return _videoPlayStartPercent
+		public function get startPlayPercent():Number{			
+			return _startPlayPercent;
 		}
 		
 		

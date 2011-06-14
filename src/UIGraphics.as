@@ -5,20 +5,28 @@ package
 	
 	public class UIGraphics extends Sprite
 	{
+		
+		private var uiButtonArray:Array;
+		
 		public function UIGraphics()
 		{
-		
+			uiButtonArray = new Array;
 		}
 		
-		public function addButtons(buttons:Array):void{			
+		public function addButtons(buttons:Array):Array{	
+			
 			for(var i:Number = 0; i<buttons.length;i++){
 				var button:SimpleButton = buttons[i] as SimpleButton;
 				button = new SimpleButton(this.buttonGraphic());
 				button.name = buttons[i];
+				uiButtonArray.push(button);
 				addChild(button);
 				button.y = i * (button.height + 4); 
 				trace(button.name);
 			}
+			
+			return uiButtonArray;
+			
 		}
 		
 		
@@ -31,5 +39,7 @@ package
 			square.graphics.endFill();	
 			return square;
 		}
+		
+		
 	}//end Class
 }//end Package
