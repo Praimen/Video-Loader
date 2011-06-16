@@ -18,7 +18,8 @@ package
 		public function LoadingState(msObject:MediaStatePlayer)
 		{	
 			_media = msObject;		
-			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.BANDWIDTH_COMPLETE, setBandwidth);					
+			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.BANDWIDTH_COMPLETE, setBandwidth);	
+			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.META_INFO, setStateInitPlaying);
 		}
 		
 		
@@ -26,47 +27,67 @@ package
 			checkBandwidth();
 		}
 	
-		private function checkBandwidth():void{
+		public function checkBandwidth():void{
 			trace("got video");
 			bandwidthChecker = new BandwidthChecker("http://www.drvollenweider.com/Portals/_default/Skins/siteSkin/images/arctic_test.bmp");					
+			buttonState()		
 		}		
 		
 		public function buttonState():void{			
-			for each (var button:SimpleButton in _media.buttons){
+			for each (var button:Sprite in _media.buttons){				
 				button.mouseEnabled = false;
-				button.alpha = .25;
+				button.buttonMode = false;
+				button.alpha = .5;
+				
 			}
-		}		
+		}
 		
 		private function setBandwidth(gEvent:GlobalEvent):void{	
 			trace("bandwith complete")
 			GlobalDispatcher.GetInstance().removeEventListener(GlobalEvent.BANDWIDTH_COMPLETE, setBandwidth);
 			_bandwidthVideoSize = bandwidthChecker.bandwidth;
-			startLoadTimer();
+			_media.setLoading(_bandwidthVideoSize);
+			startLoadTimer();			
 		}
 		
 		private function startLoadTimer():void{			
 			intervalTimer.addEventListener(TimerEvent.TIMER,checkVideo);
-			intervalTimer.start();
-			
-		}		
+			intervalTimer.start();			
+		}	
+		
 		
 		private function checkVideo(tEvent:TimerEvent):void{	
 			trace("check video "+ _media.video.currentPercentLoaded);
 			if(_media.video.currentPercentLoaded > _media.video.startPlayPercent){	
 				intervalTimer.removeEventListener(TimerEvent.TIMER, checkVideo);
-				intervalTimer = null;
-				_media.setPlaying();
+				//used to start video to get the MetaData initiated
+				_media.videoStream.resume();			
 			}
+		}
+		private function setStateInitPlaying(evt:Event):void{
+			GlobalDispatcher.GetInstance().removeEventListener(GlobalEvent.META_INFO, setStateInitPlaying);
+			_media.videoStream.pause();
+			
+			setInitCueStart();			
+		}
+		
+		private function setInitCueStart():void{
+			var initCueSegment:Object = new Object();
+			//the object contains the inital cue point segment
+			var initCueName:String = _media.video.cueArray[1].name;
+			var initCuePointStart:Number = _media.video.cueArray[1].time;
+			var initCuePointEnd:Number = _media.video.cueArray[2].time;
+			initCueSegment = {name:initCueName,start:initCuePointStart,end:initCuePointEnd};
+			
+			_media.cuePoint = initCueSegment;
+			
+			_media.setPlaying();
 		}
 		
 
 		///////////////////////////////setters and getters//////////////////////		
 		
-		public function get optVideo():String{
-			
-			return _bandwidthVideoSize;
-		}
+		
 	
 		
 	}//end Class

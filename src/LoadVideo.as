@@ -2,6 +2,7 @@ package
 {
 	import flash.display.*;
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.events.NetStatusEvent;
 	import flash.media.Video;
 	import flash.net.*;
@@ -14,7 +15,7 @@ package
 		private var _ns:NetStream;
 	
 		private var customClient:Object = new Object();
-		private var _cuePoints:Array = new Array();
+		private var _cuePoints:Array;
 		private var _currentVideoTime:Number;
 		private var _loadedPercent:uint;
 		private var _startPlayPercent:uint;
@@ -22,9 +23,8 @@ package
 		private var videoURL:String;
 		
 			
-		public function LoadVideo(videoString:String, width:Number,height:Number)
+		public function LoadVideo(width:Number,height:Number)
 		{
-			videoURL = videoString;
 			_vid = new Video(width, height);
 			addChild(_vid);
 			nc = new NetConnection();
@@ -33,6 +33,11 @@ package
 			
 			addEvents();
 			
+		}
+		
+		public function addVideo(videoString:String):void{
+			videoURL = videoString;
+			playVideo();
 		}
 		
 		private function addEvents():void{	
@@ -44,52 +49,46 @@ package
 			
 			_ns.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
 			addEventListener(Event.ENTER_FRAME, onEnterFrame);
-			playVideo();
+			
 		}
 		
-		private function playVideo():void{
+		private function playVideo():void{			
 			_vid.smoothing = true;				
 			_vid.attachNetStream(_ns);
 			//_vid.x = stage.stageWidth - (_vid.width/1.5);//custom positioning of video				
 			_ns.play(videoURL);	
 			
-		}		
-		
+		}	
 		
 		private function cuePointHandler(infoObject:Object):void {
-		/*	for (var propName:String in infoObject) {
+			/*for (var propName:String in infoObject) {
 				trace("CuePoint: "+propName + " = " + infoObject[propName]);
-			}
-			
+			}			
 			CuePoint: type = navigation
 			CuePoint: time = 8.917
-			CuePoint: name = select
-			
-			CuePoint: type = navigation
-			CuePoint: time = 19.75
-			CuePoint: name = loop
-			
+			CuePoint: name = select			
 			*/
 		}
 		
 		private function metaDataHandler(infoObject:Object):void {
+			_cuePoints = new Array();
 			for (var propName:String in infoObject) {
-				if(propName == "cuePoints"){
-					//trace("MetaData: "+ propName + " = " + infoObject[propName].name);
+				if(propName == "cuePoints"){					
 					for(var i:Number = 0; i < infoObject.cuePoints.length; i++){
 						var oCue:Object = infoObject.cuePoints[i];
-						trace("\t\t" + i + ": " + oCue.name + ", " + oCue.type+ ", " + oCue.time);
-						_cuePoints[oCue.name] = oCue.time;
+						trace("\t\t" + i + ": " + oCue.name + ", " + oCue.type+ ", " + oCue.time);								
+						_cuePoints[i] = oCue;
 					}
 				}
 			}
+			cueArray = _cuePoints;
+			GlobalDispatcher.GetInstance().dispatchEvent(new GlobalEvent(GlobalEvent.META_INFO));
 			
 		}
 		
 		private function netStatusHandler(event:NetStatusEvent):void {			
 			videoStatus = event.info.code;
-			trace(videoStatus);
-			
+						
 			switch (videoStatus) {				
 				case "NetStream.Play.Start":
 					//starts the video as the first inital play through and pauses the video for buffering
@@ -105,11 +104,9 @@ package
 		}
 	
 		private function onEnterFrame(e:Event):void{			
-			_loadedPercent = (_ns.bytesLoaded/_ns.bytesTotal) * 100;			
-			_currentVideoTime = _ns.time;
+			_loadedPercent = (_ns.bytesLoaded/_ns.bytesTotal) * 100;		
 			
-			if(currentPercentLoaded == 100){
-				
+			if(currentPercentLoaded == 100){				
 				//removeEventListener(Event.ENTER_FRAME, onEnterFrame);
 			}
 		}
@@ -123,12 +120,8 @@ package
 		
 		public function get video():Video{			
 			return _vid;
-		}
+		}	
 		
-		
-		public function get currentTime():Number{			
-			return _currentVideoTime;
-		}
 		
 		public function get currentPercentLoaded():Number{			
 			return _loadedPercent;
@@ -142,7 +135,11 @@ package
 			return _startPlayPercent;
 		}
 		
-		public function get cueArray():Array{
+		public function set cueArray(value:Array):void{			
+			_cuePoints = value;
+		}
+		
+		public function get cueArray():Array{			
 			return _cuePoints;
 		}
 		

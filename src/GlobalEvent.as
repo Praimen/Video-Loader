@@ -10,6 +10,7 @@ package
 		public static const VIDEO_WAITING:String = "video waiting";
 		public static const VIDEO_PLAYING:String = "video playing";
 		public static const BANDWIDTH_COMPLETE:String = "bandwith complete";
+		public static const META_INFO:String = "meta info";
 		//public var params:Object;
 	
 		public function GlobalEvent(type:String, /*params:Object,*/ bubbles:Boolean=true, cancelable:Boolean=false)

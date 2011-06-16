@@ -36,7 +36,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 		private function loadTestAsset():void {	
-			trace("loadAsset");
+			
 			request = new URLRequest(testFile + cacheBlocker());			
 			loader.load(request);
 		
@@ -47,7 +47,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 		protected function onLoadStart(event:Event):void {	
-			trace("on load start");
+			
 			intervalTimer = new Timer(time, 1)
 			intervalTimer.start();
 			intervalTimer.addEventListener(TimerEvent.TIMER,avgDLSpeed);
@@ -65,8 +65,7 @@
 			DLComplete(event);
 		}
 		
-		private function avgDLSpeed(tEvent:TimerEvent):void{
-			trace("avgDLSpeed")
+		private function avgDLSpeed(tEvent:TimerEvent):void{			
 			//this function will run after the timer delay has expired
 			//at that time the current bytes downloaded will be calculated against
 			//the time to get the average downloaede bytes over that time
