@@ -1,4 +1,4 @@
-package
+package trh.helpers
 {
 	import flash.display.*;
 	import flash.events.Event;
@@ -63,16 +63,23 @@ package
 		private function cuePointHandler(infoObject:Object):void {
 			/*for (var propName:String in infoObject) {
 				trace("CuePoint: "+propName + " = " + infoObject[propName]);
-			}			
+			}
+						
 			CuePoint: type = navigation
 			CuePoint: time = 8.917
 			CuePoint: name = select			
-			*/
+			*/	
+			
 		}
 		
 		private function metaDataHandler(infoObject:Object):void {
 			_cuePoints = new Array();
 			for (var propName:String in infoObject) {
+				if(propName == "duration"){
+					trace("duration: "+infoObject.duration);
+				}
+				
+				
 				if(propName == "cuePoints"){					
 					for(var i:Number = 0; i < infoObject.cuePoints.length; i++){
 						var oCue:Object = infoObject.cuePoints[i];
@@ -104,10 +111,11 @@ package
 		}
 	
 		private function onEnterFrame(e:Event):void{			
-			_loadedPercent = (_ns.bytesLoaded/_ns.bytesTotal) * 100;		
+			_loadedPercent = (_ns.bytesLoaded/_ns.bytesTotal) * 100;
+			
 			
 			if(currentPercentLoaded == 100){				
-				//removeEventListener(Event.ENTER_FRAME, onEnterFrame);
+				removeEventListener(Event.ENTER_FRAME, onEnterFrame);
 			}
 		}
 		

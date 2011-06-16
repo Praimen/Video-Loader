@@ -14,6 +14,7 @@
 	import flash.utils.getTimer;
 	import flash.events.*;
 	import flash.text.TextField;
+	import trh.helpers.BandwidthChecker;
 	
 	public class Main extends MovieClip {
 		private var _bandwidthChecker:BandwidthChecker;

@@ -1,4 +1,4 @@
-package 
+package trh.helpers 
 {
 	import flash.events.EventDispatcher;
 	

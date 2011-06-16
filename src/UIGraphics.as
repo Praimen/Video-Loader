@@ -3,11 +3,13 @@ package
 	
 	import flash.display.Sprite;
 	
+	import trh.helpers.LoadBitmap;
+	
 	public class UIGraphics extends Sprite
 	{
 		
 		private var uiButtonArray:Array;
-		
+		private var imageLoad:LoadBitmap;
 		public function UIGraphics()
 		{
 			uiButtonArray = new Array;
@@ -19,9 +21,13 @@ package
 				var button:Sprite = buttons[i] as Sprite;
 				button = buttonGraphic();
 				button.name = buttons[i];
+				button.x = buttons[i].posX;
+				button.y = buttons[i].posY;
+				imageLoad = new LoadBitmap("image.jpg", 200, 100);
 				uiButtonArray.push(button);
 				addChild(button);
 				button.y = i * (button.height + 4); 
+				
 				
 			}
 			
@@ -31,6 +37,7 @@ package
 		
 		
 		private function buttonGraphic():Sprite{
+				
 			var square:Sprite = new Sprite();
 			
 			square.graphics.lineStyle(3,0x00ff00);

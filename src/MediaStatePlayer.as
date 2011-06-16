@@ -6,8 +6,9 @@ package
 	import flash.net.NetStream;
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
+	import trh.helpers.LoadVideo;
 	
-	[SWF(backgroundColor="#666666", frameRate="100", width="800", height="450")]
+	[SWF(backgroundColor="#666666", frameRate="100", width="940", height="670")]
 	public class MediaStatePlayer extends Sprite
 	{	
 		private var button:ButtonState
@@ -44,8 +45,13 @@ package
 		private function initVideo():void{	
 			
 			var buttonArray:Array = new Array()
-			buttonArray = ["select","loop","ortho","pedo1","pedo2"];
-			
+			buttonArray = 	[	
+								{name:"ortho1",posX:300, posY:50},
+								{name:"ortho2",posX:300, posY:100},
+								{name:"ortho3",posX:300, posY:150},
+								{name:"pedo1",posX:300, posY:200},
+								{name:"pedo2",posX:300, posY:250},								
+							];			
 			uiButtonArray = ui.addButtons(buttonArray);				
 			addChild(ui);			
 			//percentage number to start playing the video;
@@ -99,7 +105,7 @@ package
 					cuePointObject = {name:cueName,start:cuePointStart,end:cuePointEnd};
 				}
 			}
-			//trace("media cue array "+_media.video.cueArray[1].name+ " evt.currentTarget.name "+ evt.target.name)
+			trace("media cue array: "+ cuePointObject.name + " cuePointObject.start: " + cuePointObject.start+ " cuePointObject.end: "+ cuePointObject.end)
 			cuePoint = cuePointObject;
 			state.applyState();		
 		}
@@ -107,8 +113,7 @@ package
 		private function onEnterFrame(e:Event):void{
 		
 			if(videoStream.time > cuePoint.end){
-				addEventListener(Event.ENTER_FRAME, onEnterFrame);	
-				trace("Video Time "+ videoStream.time);					
+				addEventListener(Event.ENTER_FRAME, onEnterFrame);								
 				state = waiting;
 				getCuePoint("loop")
 					

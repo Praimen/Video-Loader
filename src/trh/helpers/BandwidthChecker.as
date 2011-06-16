@@ -1,4 +1,4 @@
-﻿package {
+﻿package trh.helpers {
 	
 	import flash.display.Loader;
 	import flash.display.Sprite;

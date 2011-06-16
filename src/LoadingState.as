@@ -6,6 +6,9 @@ package
 	import flash.media.Video;
 	import flash.net.NetStream;
 	import flash.utils.Timer;
+	import trh.helpers.BandwidthChecker;
+	import trh.helpers.GlobalDispatcher;
+	import trh.helpers.GlobalEvent;
 	
 		
 	public class LoadingState implements IVideoState
