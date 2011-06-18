@@ -18,6 +18,7 @@ package
 		
 		private function checkButtonActivation(tEvent:TimerEvent):void{
 			for (var i:Number = 0; i< _media.buttons.length; i++){
+				trace("check Button Activation");
 				var button:Sprite = _media.buttons[i];
 				var buttonTime:Number = _media.video.cueArray[i].time;
 				

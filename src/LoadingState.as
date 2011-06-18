@@ -77,7 +77,7 @@ package
 		}
 		
 		private function setInitCueStart():void{
-			
+			trace("inital load Cue");
 			var initCueSegment:Object = new Object();
 			//the object contains the inital cue point segment
 			var initCueName:String = _media.video.cueArray[1].name;
