@@ -37,11 +37,13 @@ package
 		
 		
 		public function buttonState():void{			
-			for each (var button:Sprite in _media.buttons){					
+			for each (var button:Sprite in  _media.btnState.activeBtnArray){					
 				if(button.name == _media.cuePoint.name){
 					button.alpha = 1;					
+				}else{
+					button.alpha = .25;
 				}				
-			}
+			}			
 		}
 		
 		
@@ -54,12 +56,10 @@ package
 		private function startPlaying(tEvent:TimerEvent):void{
 			trace("video stream Time: "+_media.videoStream.time+" |  playing cuePoints: "+_media.cuePoint.end);
 			if(_media.videoStream.time > _media.cuePoint.end){
-				trace("Exiting Playing State");
-				
+				trace("Exiting Playing State");				
 				intervalTimer.stop();
 				intervalTimer.removeEventListener(TimerEvent.TIMER,startPlaying);				
-			 	_media.setWaiting()		
-				_media.getCuePoint("loop");	
+			 	_media.setWaiting()	;				
 			}			
 		}
 		

@@ -117,6 +117,7 @@ package trh.helpers
 			_loadedPercent = (_ns.bytesLoaded/_ns.bytesTotal) * 100;	
 			
 			_loadedTimePercentage = duration * (_loadedPercent/100);
+			trace("Load Percentage:" + _loadedPercent)
 			trace("Time Percentage:" + _loadedTimePercentage)
 			if(_loadedPercent == 100){	
 				intervalTimer.stop();

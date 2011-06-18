@@ -32,14 +32,12 @@ package
 			
 		}		
 		
-		public function buttonState():void{			
-			for (var i:Number = 0; i< _media.buttons.length; i++){
-				var button:Sprite = _media.buttons[i];			
-				if(button.buttonMode){
-					trace("waiting button name: "+button.name);
-					button.alpha = 1;
-					button.addEventListener(MouseEvent.CLICK, runCuePoint);
-				}
+		public function buttonState():void{
+			
+			for each (var button:Sprite in  _media.btnState.activeBtnArray){				
+				trace("Button State button name:" +button.name)
+				button.alpha = 1;
+				button.addEventListener(MouseEvent.CLICK, runCuePoint);
 			}
 		}
 		

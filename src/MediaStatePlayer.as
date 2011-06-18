@@ -71,7 +71,7 @@ package
 		public function setLoading(optVideo:String):void{			
 			//_loadVideo = new LoadVideo("http://www.drvollenweider.com/Portals/_default/Skins/siteSkin/videos/Cue_1.flv",800,450);
 			if(optVideo == "high"){
-				_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_400.flv");
+				_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_600.flv");
 			}
 			if(optVideo == "low"){
 				_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_400.flv");	
@@ -90,6 +90,7 @@ package
 		public function setWaiting():void{			
 			//state = WaitingState.as
 			state = waiting;
+			getCuePoint("loop");	
 			//state.applyState();	
 			//state.buttonState();
 		}
