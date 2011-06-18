@@ -6,15 +6,18 @@ package
 	import flash.net.NetStream;
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
+	
 	import trh.helpers.LoadVideo;
 	
-	[SWF(backgroundColor="#666666", frameRate="100", width="940", height="670")]
+	[SWF(backgroundColor="#666666", frameRate="60", width="940", height="670")]
 	public class MediaStatePlayer extends Sprite
 	{	
 		private var button:ButtonState
 		private var ui:UIGraphics;
-		private var uiButtonArray:Array;
+		private var btnArray:Array;
 		private var _startEndCue:Object;
+		private var buttonArray:Array = new Array();
+		private var _btnState:ButtonState;
 		
 		private var loading:IVideoState;		
 		private var playing:IVideoState;		
@@ -31,65 +34,64 @@ package
 		 * Loads the initial available states and listeners 
 		 * 
 		 */
-		private function init():void{
-			
+		private function init():void{			
 			loading = new LoadingState(this);
 			waiting = new WaitingState(this);
-			playing = new PlayState(this);			
+			playing = new PlayState(this);
+			_btnState = new ButtonState(this);
 			ui = new UIGraphics();			
 			_loadVideo = new LoadVideo(800,450);						
 			initVideo();			
 		}		
 			
 		
-		private function initVideo():void{	
-			
-			var buttonArray:Array = new Array()
+		private function initVideo():void{			
+			//add buttons to array
 			buttonArray = 	[	
 								{name:"ortho1",posX:300, posY:50},
 								{name:"ortho2",posX:300, posY:100},
 								{name:"ortho3",posX:300, posY:150},
 								{name:"pedo1",posX:300, posY:200},
 								{name:"pedo2",posX:300, posY:250},								
-							];			
-			uiButtonArray = ui.addButtons(buttonArray);				
+							];	
+			ui.addButtons(buttonArray);
+			buttons = ui.uiButtonArray;				
 			addChild(ui);			
+			
 			//percentage number to start playing the video;
 			_loadVideo.startPlayPercent = 5;
 			addChild(_loadVideo.video);	
 				
-			//state = LoadingState.as
+			//intial state is loading state   state = LoadingState.as
 			state = loading;
-			state.applyState();			
+			state.applyState();
 			
 		}
 		
-		public function setLoading(optVideo:String):void{
-			
+		public function setLoading(optVideo:String):void{			
 			//_loadVideo = new LoadVideo("http://www.drvollenweider.com/Portals/_default/Skins/siteSkin/videos/Cue_1.flv",800,450);
 			if(optVideo == "high"){
 				_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_400.flv");
 			}
 			if(optVideo == "low"){
 				_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_400.flv");	
-			}
-			
-			
+			}			
 		}
 				
 		
 		public function setPlaying():void{
-			addEventListener(Event.ENTER_FRAME, onEnterFrame);		
+				
 			//state = PlayState.as
 			state = playing;			
-			state.applyState();	
-			
+			//state.applyState();
+			//state.buttonState();
 		}
 		
 		public function setWaiting():void{			
 			//state = WaitingState.as
 			state = waiting;
-			state.applyState();				
+			//state.applyState();	
+			//state.buttonState();
 		}
 		
 		
@@ -107,24 +109,25 @@ package
 			}
 			trace("media cue array: "+ cuePointObject.name + " cuePointObject.start: " + cuePointObject.start+ " cuePointObject.end: "+ cuePointObject.end)
 			cuePoint = cuePointObject;
-			state.applyState();		
+			state.applyState();
+			state.buttonState();
+				
 		}
 		
-		private function onEnterFrame(e:Event):void{
-		
-			if(videoStream.time > cuePoint.end){
-				addEventListener(Event.ENTER_FRAME, onEnterFrame);								
-				state = waiting;
-				getCuePoint("loop")
-					
-			}			
-		}
+	
 		
 		
 ///////////////////////////////setters and getters//////////////////////
 		
+		public function get btnState():ButtonState{
+			return _btnState;
+		}
+		public function set buttons(value:Array):void{			
+			btnArray = value; 
+		}		
+		
 		public function get buttons():Array{			
-			return uiButtonArray;
+			return btnArray;
 		}		
 		
 		public function get video():LoadVideo{

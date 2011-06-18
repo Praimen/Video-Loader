@@ -3,7 +3,6 @@ package
 	import flash.display.SimpleButton;
 	import flash.display.Sprite;
 	import flash.events.*;
-	
 	import flash.events.TimerEvent;
 	import flash.net.NetStream;
 	import flash.utils.Timer;
@@ -12,7 +11,7 @@ package
 	public class PlayState implements IVideoState
 	{
 		private var _media:MediaStatePlayer;
-		//private var testTimer:Timer = new Timer(5000,1)
+		private var intervalTimer:Timer = new Timer(500);
 		
 		public function PlayState(msObject:MediaStatePlayer)
 		{	
@@ -32,18 +31,36 @@ package
 			}
 			
 			_media.videoStream.resume();
-			buttonState()
 			
+			startPlayingTimer();
 		}		
 		
 		
 		public function buttonState():void{			
-			for each (var button:Sprite in _media.buttons){				
-				button.mouseEnabled = false;
-				button.buttonMode = false;
-				button.alpha = .5;
-				
+			for each (var button:Sprite in _media.buttons){					
+				if(button.name == _media.cuePoint.name){
+					button.alpha = 1;					
+				}				
 			}
+		}
+		
+		
+		private function startPlayingTimer():void{			
+			intervalTimer.addEventListener(TimerEvent.TIMER,startPlaying);
+			intervalTimer.start();
+			
+		}		
+		
+		private function startPlaying(tEvent:TimerEvent):void{
+			trace("video stream Time: "+_media.videoStream.time+" |  playing cuePoints: "+_media.cuePoint.end);
+			if(_media.videoStream.time > _media.cuePoint.end){
+				trace("Exiting Playing State");
+				
+				intervalTimer.stop();
+				intervalTimer.removeEventListener(TimerEvent.TIMER,startPlaying);				
+			 	_media.setWaiting()		
+				_media.getCuePoint("loop");	
+			}			
 		}
 		
 				

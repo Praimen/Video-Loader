@@ -4,8 +4,10 @@ package trh.helpers
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.NetStatusEvent;
+	import flash.events.TimerEvent;
 	import flash.media.Video;
 	import flash.net.*;
+	import flash.utils.Timer;
 
 	public class LoadVideo extends Sprite
 	{
@@ -19,9 +21,11 @@ package trh.helpers
 		private var _currentVideoTime:Number;
 		private var _loadedPercent:uint;
 		private var _startPlayPercent:uint;
+		private var _loadedTimePercentage:Number;
 		private var videoStatus:String;
 		private var videoURL:String;
-		
+		private var _duration:Number;
+		private var intervalTimer:Timer = new Timer(500);
 			
 		public function LoadVideo(width:Number,height:Number)
 		{
@@ -48,7 +52,8 @@ package trh.helpers
 			_ns.client = customClient;
 			
 			_ns.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
-			addEventListener(Event.ENTER_FRAME, onEnterFrame);
+			intervalTimer.addEventListener(TimerEvent.TIMER,percentLoaded);
+			intervalTimer.start();
 			
 		}
 		
@@ -74,12 +79,7 @@ package trh.helpers
 		
 		private function metaDataHandler(infoObject:Object):void {
 			_cuePoints = new Array();
-			for (var propName:String in infoObject) {
-				if(propName == "duration"){
-					trace("duration: "+infoObject.duration);
-				}
-				
-				
+			for (var propName:String in infoObject) {				
 				if(propName == "cuePoints"){					
 					for(var i:Number = 0; i < infoObject.cuePoints.length; i++){
 						var oCue:Object = infoObject.cuePoints[i];
@@ -89,6 +89,7 @@ package trh.helpers
 				}
 			}
 			cueArray = _cuePoints;
+			duration = infoObject.duration;
 			GlobalDispatcher.GetInstance().dispatchEvent(new GlobalEvent(GlobalEvent.META_INFO));
 			
 		}
@@ -109,13 +110,18 @@ package trh.helpers
 			}//end Switch			
 			
 		}
+		
+		
 	
-		private function onEnterFrame(e:Event):void{			
-			_loadedPercent = (_ns.bytesLoaded/_ns.bytesTotal) * 100;
+		private function percentLoaded(tEvent:TimerEvent):void{			
+			_loadedPercent = (_ns.bytesLoaded/_ns.bytesTotal) * 100;	
 			
-			
-			if(currentPercentLoaded == 100){				
-				removeEventListener(Event.ENTER_FRAME, onEnterFrame);
+			_loadedTimePercentage = duration * (_loadedPercent/100);
+			trace("Time Percentage:" + _loadedTimePercentage)
+			if(_loadedPercent == 100){	
+				intervalTimer.stop();
+				intervalTimer.removeEventListener(TimerEvent.TIMER,percentLoaded);
+				
 			}
 		}
 		
@@ -129,6 +135,19 @@ package trh.helpers
 		public function get video():Video{			
 			return _vid;
 		}	
+		
+		public function set duration(value:Number):void{
+			_duration = value;
+		}
+		
+		public function get duration():Number{
+			return _duration;
+		}
+		
+		public function get timeLoaded():Number{
+			///timeLoaded will return the time of the video based on the percentage of the loaded bytes	
+			return _loadedTimePercentage
+		}
 		
 		
 		public function get currentPercentLoaded():Number{			
