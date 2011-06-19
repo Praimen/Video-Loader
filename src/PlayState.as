@@ -24,12 +24,11 @@ package
 		public function applyState():void{			
 			_media.videoStream.pause();
 			
-			if(_media.videoStream.time > 19.00 ){//if it is passed the intro start using the cuePoint markers
+			if(_media.btnState.activeBtnArray.length > 0){//if there is an active button use the Cue point
 				_media.videoStream.seek(_media.cuePoint.start);				
 			}else{
 				_media.videoStream.seek(0);				
-			}
-			
+			}			
 			_media.videoStream.resume();
 			
 			startPlayingTimer();
@@ -42,29 +41,40 @@ package
 					button.alpha = 1;					
 				}else{
 					button.alpha = .25;					
-				}				
+				}			
 			}			
 		}
+		
+		private function buttonStateUpdate(tEvent:TimerEvent):void{
+			for each (var button:Sprite in  _media.btnState.activeBtnArray){
+				//buggy event being added fix later	
+				//may involve a loader listener
+				button.addEventListener(MouseEvent.CLICK, runCuePoint);
+			}
+		}
+		
+		public function runCuePoint(evt:Event):void{
+			//sets the playing state with the but name as the cue point name					
+			_media.getCuePoint(evt.currentTarget.name);			
+		}		
 		
 		
 		private function startPlayingTimer():void{			
 			intervalTimer.addEventListener(TimerEvent.TIMER,startPlaying);
+			intervalTimer.addEventListener(TimerEvent.TIMER,buttonStateUpdate);
 			intervalTimer.start();
 			
 		}		
 		
 		private function startPlaying(tEvent:TimerEvent):void{
 			//trace("video stream Time: "+_media.videoStream.time+" |  playing cuePoints: "+_media.cuePoint.end);
-			if(_media.videoStream.time > _media.cuePoint.end){
-							
+			if(_media.videoStream.time > _media.cuePoint.end){							
 				intervalTimer.stop();
-				intervalTimer.removeEventListener(TimerEvent.TIMER,startPlaying);				
+				intervalTimer.removeEventListener(TimerEvent.TIMER,startPlaying);
+				intervalTimer.removeEventListener(TimerEvent.TIMER,buttonStateUpdate);
 			 	_media.waitingState()	;				
 			}			
-		}
-		
-				
-		
+		}		
 		
 	}//end Class
 }//end Package

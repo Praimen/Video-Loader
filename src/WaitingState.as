@@ -11,8 +11,7 @@ package
 		private var _media:MediaStatePlayer;
 		private var intervalTimer:Timer = new Timer(500);
 		
-		public function WaitingState(msObject:MediaStatePlayer)		{
-			
+		public function WaitingState(msObject:MediaStatePlayer){			
 			_media = msObject;						
 		}
 		
@@ -27,11 +26,14 @@ package
 			for each (var button:Sprite in  _media.btnState.activeBtnArray){				
 				button.alpha = 1;
 				button.useHandCursor = true;
+				//buggy event getting added fix later
+				//may involve a loader listener
+				button.removeEventListener(MouseEvent.CLICK, runCuePoint);
 				button.addEventListener(MouseEvent.CLICK, runCuePoint);
 			}
 		}
 		
-		private function runCuePoint(evt:Event):void{
+		public function runCuePoint(evt:Event):void{
 			//sets the playing state with the but name as the cue point name		
 			_media.playingState();			
 			_media.getCuePoint(evt.currentTarget.name);			

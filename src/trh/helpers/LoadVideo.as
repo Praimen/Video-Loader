@@ -88,7 +88,7 @@ package trh.helpers
 					}
 				}
 			}
-			cueArray = _cuePoints;
+			
 			duration = infoObject.duration;
 			GlobalDispatcher.GetInstance().dispatchEvent(new GlobalEvent(GlobalEvent.META_INFO));
 			
@@ -100,7 +100,7 @@ package trh.helpers
 			switch (videoStatus) {				
 				case "NetStream.Play.Start":
 					//starts the video as the first inital play through and pauses the video for buffering
-					trace("starting");
+					//trace("starting");
 					_ns.pause();					
 				break;
 				
@@ -109,14 +109,14 @@ package trh.helpers
 				break;
 			}//end Switch			
 			
-		}
-		
+		}		
 		
 	
 		private function percentLoaded(tEvent:TimerEvent):void{			
 			_loadedPercent = (_ns.bytesLoaded/_ns.bytesTotal) * 100;	
-			
-			_loadedTimePercentage = duration * (_loadedPercent/100);			
+			//trace("loaded Percentage: "+_loadedPercent)
+			_loadedTimePercentage = duration * (_loadedPercent/100);
+			//trace("Time Percentage: "+ _loadedTimePercentage)
 			if(_loadedPercent == 100){	
 				intervalTimer.stop();
 				intervalTimer.removeEventListener(TimerEvent.TIMER,percentLoaded);
@@ -159,11 +159,8 @@ package trh.helpers
 		
 		public function get startPlayPercent():Number{			
 			return _startPlayPercent;
-		}
+		}	
 		
-		public function set cueArray(value:Array):void{			
-			_cuePoints = value;
-		}
 		
 		public function get cueArray():Array{			
 			return _cuePoints;

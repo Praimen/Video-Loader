@@ -14,6 +14,7 @@ package trh.helpers
 	{
 		private var _bitdraw:BitmapData;
 		private var _loadedBitmapData:Bitmap;
+		private var _sprite:Sprite;
 		private var loader:Loader;
 		private var regEvent:Boolean;
 		//==decouple===/private var myTimer:PanelTimer;
@@ -40,7 +41,11 @@ package trh.helpers
 			loader.contentLoaderInfo.addEventListener(IOErrorEvent.VERIFY_ERROR, onLoadError, false, 0, true);
 			loader.contentLoaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadError, false, 0, true);
 			
-			loader.load(new URLRequest(loadURL));	
+			try{
+				loader.load(new URLRequest(loadURL));		
+			}catch(e:Error){
+				trace("Error Occurred while loading Image");	
+			}
 			
 		}
 		
@@ -57,8 +62,7 @@ package trh.helpers
 		}
 		
 		protected function onLoadError(event:Event):void {
-			trace("there is some kind of error happeneing with the loading of the Bitmap");
-		
+				
 			imageLoadClean();
 		}
 		
@@ -74,6 +78,13 @@ package trh.helpers
 		public function get bitmap():Bitmap{	
 			_loadedBitmapData = new Bitmap(_bitdraw);				
 			return _loadedBitmapData;
+		}
+		
+		public function get sprite():Sprite{	
+			_loadedBitmapData = new Bitmap(_bitdraw);
+			_sprite = new Sprite()
+			_sprite.addChild(_loadedBitmapData);
+			return _sprite;
 		}	
 		
 		
