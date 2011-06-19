@@ -8,7 +8,7 @@
 	import flash.utils.*;
 	
 	
-	public class BandwidthChecker extends Sprite {
+	public class BandwidthChecker {
 		
 		public static const DEFAULT_BANDWIDTH:String = "low";
 		public static const DEFAULT_BANDWIDTH_SPEED:Number = 50; // Setting connection threshold speed to 50KBps
@@ -29,6 +29,7 @@
 			addListeners();
 			loadTestAsset();
 			
+			
 		}
 		
 /////////////////////////////////////////////////////////////////////////////
@@ -39,6 +40,7 @@
 			
 			request = new URLRequest(testFile + cacheBlocker());			
 			loader.load(request);
+			
 		
 		}
 
@@ -47,16 +49,18 @@
 /////////////////////////////////////////////////////////////////////////////
 
 		protected function onLoadStart(event:Event):void {	
-			
-			intervalTimer = new Timer(time, 1)
-			intervalTimer.start();
+			trace("start Loading the test image");
+			intervalTimer = new Timer(time, 1);
 			intervalTimer.addEventListener(TimerEvent.TIMER,avgDLSpeed);
-			loader.contentLoaderInfo.addEventListener(ProgressEvent.PROGRESS, currentLoadedBytes);			
+			intervalTimer.start();
+			
+			//loader.contentLoaderInfo.addEventListener(ProgressEvent.PROGRESS, currentLoadedBytes);			
 		}
 		
-		private function currentLoadedBytes(e:Event):void{
+		/*private function currentLoadedBytes(e:Event):void{
 			currentBytesDownloaded = loader.contentLoaderInfo.bytesLoaded;
-		}
+			trace("currentDownloaded: "+currentBytesDownloaded);
+		}*/
 	
 		
 		protected function onLoadError(event:Event):void {
@@ -69,9 +73,15 @@
 			//this function will run after the timer delay has expired
 			//at that time the current bytes downloaded will be calculated against
 			//the time to get the average downloaede bytes over that time
-			bandwidthSpeedDetected = (loader.contentLoaderInfo.bytesLoaded/1000)/time;
-			_bandwidthDetected = (bandwidthSpeedDetected > DEFAULT_BANDWIDTH_SPEED) ? "high" : "low";				
+			
+			bandwidthSpeedDetected = loader.contentLoaderInfo.bytesLoaded/time;
+			
+			_bandwidthDetected = (bandwidthSpeedDetected > DEFAULT_BANDWIDTH_SPEED) ? "high" : "low";	
+			trace("/////////////////==///bandwidth: "+ bandwidthSpeedDetected+" = "+_bandwidthDetected+"////////////////////////////////////////////////////");
 			GlobalDispatcher.GetInstance().dispatchEvent(new GlobalEvent(GlobalEvent.BANDWIDTH_COMPLETE));
+			loader.close();
+			loader.unload();
+			removeListeners();
 		}
 
 		protected function DLComplete(event:Event):void {
@@ -120,9 +130,7 @@
 			loader.contentLoaderInfo.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadError);
 		}			
 		
-/////////////////////////////////////////////////////////////////////////////
-//		GETTERS
-/////////////////////////////////////////////////////////////////////////////
+		///////////////////////////////setters and getters//////////////////////
 		public function get bandwidth():String {
 			return _bandwidthDetected;
 		}		

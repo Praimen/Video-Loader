@@ -12,11 +12,11 @@ package
 	[SWF(backgroundColor="#666666", frameRate="60", width="940", height="670")]
 	public class MediaStatePlayer extends Sprite
 	{	
-		private var button:ButtonState
+		private var button:ButtonState;
 		private var ui:UIGraphics;
-		private var btnArray:Array;
+		private var _btnArray:Array;
 		private var _startEndCue:Object;
-		private var buttonArray:Array = new Array();
+		private var buttonArray:Array;
 		private var _btnState:ButtonState;
 		
 		private var loading:IVideoState;		
@@ -25,96 +25,91 @@ package
 		
 		private var _loadVideo:LoadVideo;	
 		private var _state:IVideoState;
-		
-		public function MediaStatePlayer(){				
-			init();
-		}
-		
 		/**
 		 * Loads the initial available states and listeners 
 		 * 
 		 */
-		private function init():void{			
+		public function MediaStatePlayer(){				
 			loading = new LoadingState(this);
 			waiting = new WaitingState(this);
 			playing = new PlayState(this);
 			_btnState = new ButtonState(this);
 			ui = new UIGraphics();			
 			_loadVideo = new LoadVideo(800,450);						
-			initVideo();			
-		}		
-			
+			init();		
+		}			
 		
-		private function initVideo():void{			
-			//add buttons to array
+		private function init():void{			
+			//add buttons to array, 
+			//name should correspond to the cue point name
+			//posX, posY are the positions of the buttons relative to the stage
+			//image: link to image asset
+			//imgW and imgH are the width and height of the image asset
 			buttonArray = 	[	
-								{name:"ortho1",posX:300, posY:50},
-								{name:"ortho2",posX:300, posY:100},
-								{name:"ortho3",posX:300, posY:150},
-								{name:"pedo1",posX:300, posY:200},
-								{name:"pedo2",posX:300, posY:250},								
-							];	
-			ui.addButtons(buttonArray);
-			buttons = ui.uiButtonArray;				
-			addChild(ui);			
+								{name:"pedo1",posX:200, posY:50,image:"assets/see_pediatric.png",imgW:240,imgH:50},
+								{name:"pedo2",posX:200, posY:100,image:"assets/see_pediatric.png",imgW:240,imgH:50},
+								{name:"pedo3",posX:200, posY:150,image:"assets/see_pediatric.png",imgW:240,imgH:50},
+								{name:"pedo4",posX:100, posY:200,image:"assets/see_pediatric.png",imgW:240,imgH:50},
+								{name:"pedo5",posX:100, posY:250,image:"assets/see_pediatric.png",imgW:240,imgH:50}								
+							];
+			
+			ui.addBtns(buttonArray);
+			_btnArray = ui.uiButtonArray;				
+						
 			
 			//percentage number to start playing the video;
 			_loadVideo.startPlayPercent = 5;
+			
+			//add visual elements order is important
 			addChild(_loadVideo.video);	
+			addChild(ui);
 				
 			//intial state is loading state   state = LoadingState.as
-			state = loading;
+			_state = loading;
 			state.applyState();
 			
 		}
 		
 		public function setLoading(optVideo:String):void{			
-			//_loadVideo = new LoadVideo("http://www.drvollenweider.com/Portals/_default/Skins/siteSkin/videos/Cue_1.flv",800,450);
-			if(optVideo == "high"){
+			if(optVideo == "high"){			
 				_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_600.flv");
 			}
-			if(optVideo == "low"){
+			if(optVideo == "low"){				
 				_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_400.flv");	
-			}			
+			}
+			
+			
 		}
 				
 		
-		public function setPlaying():void{
-				
+		public function playingState():void{				
 			//state = PlayState.as
-			state = playing;			
-			//state.applyState();
-			//state.buttonState();
+			_state = playing;			
+			
 		}
 		
-		public function setWaiting():void{			
+		public function waitingState():void{			
 			//state = WaitingState.as
-			state = waiting;
+			_state = waiting;
 			getCuePoint("loop");	
-			//state.applyState();	
-			//state.buttonState();
+			
 		}
 		
 		
-		public function getCuePoint(cueName:String):void{
-			trace("button working");
+		public function getCuePoint(cueName:String):void{			
 			var cueArray:Array = video.cueArray;			
 			var cuePointObject:Object = new Object();
-			
+			trace("triggered cue name: "+cueName);
 			for(var i:Number = 0; i < cueArray.length; i++){
 				if(video.cueArray[i].name == cueName){					
-					var cuePointStart:Number = cueArray[i].time;
-					var cuePointEnd:Number = cueArray[i+1].time;
-					cuePointObject = {name:cueName,start:cuePointStart,end:cuePointEnd};
+					cuePointObject = {name:cueName, start:cueArray[i].time, end:cueArray[i+1].time};
 				}
 			}
 			trace("media cue array: "+ cuePointObject.name + " cuePointObject.start: " + cuePointObject.start+ " cuePointObject.end: "+ cuePointObject.end)
 			cuePoint = cuePointObject;
 			state.applyState();
-			state.buttonState();
-				
-		}
-		
+			state.buttonState();				
+		}	
 	
 		
 		
@@ -122,13 +117,10 @@ package
 		
 		public function get btnState():ButtonState{
 			return _btnState;
-		}
-		public function set buttons(value:Array):void{			
-			btnArray = value; 
-		}		
+		}			
 		
 		public function get buttons():Array{			
-			return btnArray;
+			return _btnArray;
 		}		
 		
 		public function get video():LoadVideo{
@@ -148,10 +140,6 @@ package
 			//start and End cuePoint
 			return _startEndCue	;		
 		}		
-		
-		public function set state(value:IVideoState):void{			
-			_state = value;
-		}
 		
 		public function get state():IVideoState{			
 			return _state;

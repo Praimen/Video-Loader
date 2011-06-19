@@ -1,34 +1,32 @@
 package
 {
 	
-	import flash.display.Sprite;
+	import flash.display.*;
 	
 	import trh.helpers.LoadBitmap;
 	
-	public class UIGraphics extends Sprite
-	{
+	public class UIGraphics extends MovieClip 	{
 		
+			
 		private var _uiButtonArray:Array;
-		//private var imageLoad:LoadBitmap;
+		private var imageLoad:LoadBitmap;
 		public function UIGraphics()
 		{
 			_uiButtonArray = new Array;
 		}
 		
-		public function addButtons(buttons:Array):void{	
+		public function addBtns(buttons:Array):void{	
 			
 			for(var i:Number = 0; i<buttons.length;i++){
-				var button:Sprite = buttons[i] as Sprite;
-				button = buttonGraphic();
+				var button:Sprite = new Sprite;				
+				button.addChild(buttonImage(buttons[i].image,240,50));
 				button.name = buttons[i].name;
 				button.x = buttons[i].posX;
 				button.y = buttons[i].posY;	
-				button.alpha = .10;
-				
-				//button.image = buttonImage
+				button.alpha = .10;				
 				_uiButtonArray.push(button);
-				addChild(button);
-			}		
+				addChild(button);				
+			}	
 		}
 		
 		
@@ -42,10 +40,13 @@ package
 		}
 		
 		
-		/*private function buttonImage():LoadBitmap{
-			//imageLoad = new LoadBitmap("image.jpg", 200, 100);	
-			return;
-		}*/
+		private function buttonImage(imgStr:String,imgW:Number,imgH:Number):Sprite{
+			imageLoad = new LoadBitmap(imgStr,imgW, imgH);			
+			var img:Bitmap = imageLoad.bitmap;
+			var image:Sprite = new Sprite;
+			image.addChild(img);
+			return image;
+		}
 		///////////============setter and getter===================//////////
 		
 		public function get uiButtonArray():Array{

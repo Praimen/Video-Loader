@@ -1,7 +1,7 @@
 package
 {
-	import flash.display.SimpleButton;
-	import flash.display.Sprite;
+	import flash.display.*;
+	
 	import flash.events.*;
 	import flash.events.TimerEvent;
 	import flash.net.NetStream;
@@ -24,7 +24,7 @@ package
 		public function applyState():void{			
 			_media.videoStream.pause();
 			
-			if(_media.videoStream.time > 19.00 ){
+			if(_media.videoStream.time > 19.00 ){//if it is passed the intro start using the cuePoint markers
 				_media.videoStream.seek(_media.cuePoint.start);				
 			}else{
 				_media.videoStream.seek(0);				
@@ -41,7 +41,7 @@ package
 				if(button.name == _media.cuePoint.name){
 					button.alpha = 1;					
 				}else{
-					button.alpha = .25;
+					button.alpha = .25;					
 				}				
 			}			
 		}
@@ -54,12 +54,12 @@ package
 		}		
 		
 		private function startPlaying(tEvent:TimerEvent):void{
-			trace("video stream Time: "+_media.videoStream.time+" |  playing cuePoints: "+_media.cuePoint.end);
+			//trace("video stream Time: "+_media.videoStream.time+" |  playing cuePoints: "+_media.cuePoint.end);
 			if(_media.videoStream.time > _media.cuePoint.end){
-				trace("Exiting Playing State");				
+							
 				intervalTimer.stop();
 				intervalTimer.removeEventListener(TimerEvent.TIMER,startPlaying);				
-			 	_media.setWaiting()	;				
+			 	_media.waitingState()	;				
 			}			
 		}
 		

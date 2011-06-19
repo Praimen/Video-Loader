@@ -31,51 +31,53 @@ package trh.helpers
 			
 			_bitdraw = new BitmapData(pixelW,pixelH, true, 0x00000000);
 			loader = new Loader();			
-			loader.contentLoaderInfo.addEventListener( Event.COMPLETE, initBitmap );	
+			loader.contentLoaderInfo.addEventListener( Event.COMPLETE, initBitmap );
+			
+			
+			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onLoadError, false, 0, true);
+			loader.contentLoaderInfo.addEventListener(IOErrorEvent.NETWORK_ERROR, onLoadError, false, 0, true);
+			loader.contentLoaderInfo.addEventListener(IOErrorEvent.DISK_ERROR, onLoadError, false, 0, true);
+			loader.contentLoaderInfo.addEventListener(IOErrorEvent.VERIFY_ERROR, onLoadError, false, 0, true);
+			loader.contentLoaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadError, false, 0, true);
+			
 			loader.load(new URLRequest(loadURL));	
 			
 		}
 		
 		private function initBitmap(event:Event):void{			
-			_bitdraw.draw(loader);			
-			loader.contentLoaderInfo.removeEventListener( Event.COMPLETE, initBitmap );
-			loader = null
+			_bitdraw.draw(loader);
 			
-		}	
-		
-		
-		private function bitmapAdded(e:Event):void{	
-			/*//==decouple=====///myTimer.data.panel = e.target.parent;
-			myTimer.addEventListener(TimerEvent.TIMER,getImagePixel);
-			myTimer.start();*/																
+			loader.contentLoaderInfo.removeEventListener( Event.COMPLETE, initBitmap );
+			loader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onLoadError);
+			loader.contentLoaderInfo.removeEventListener(IOErrorEvent.NETWORK_ERROR, onLoadError);
+			loader.contentLoaderInfo.removeEventListener(IOErrorEvent.DISK_ERROR, onLoadError);
+			loader.contentLoaderInfo.removeEventListener(IOErrorEvent.VERIFY_ERROR, onLoadError);
+			loader.contentLoaderInfo.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadError);	
+			
 		}
 		
-		private function getImagePixel(e:TimerEvent):void{	
-		/*	var panelParent:* = e.target.data.panel;
-			var isPixel:uint = bitmapData.getPixel32(panelParent.width/2, panelParent.height/2);			
-			if (isPixel > 0){
-				myTimer.stop();
-				//==decouple===/panelParent.dispatchEvent(new PanelEvent(PanelEvent.PANEL_RENDERED));					
-			}*/
-			//add counter and error handling if images does not load			
+		protected function onLoadError(event:Event):void {
+			trace("there is some kind of error happeneing with the loading of the Bitmap");
+		
+			imageLoadClean();
+		}
+		
+		protected function imageLoadClean():void {			
+			loader.close();
+			loader.unload();
+			loader = null;
+			
 		}
 		
 		///getter and setters
 		
 		public function get bitmap():Bitmap{	
-			_loadedBitmapData = new Bitmap(_bitdraw);
-			
-			if(regEvent){
-				_loadedBitmapData.addEventListener(Event.ADDED, bitmapAdded);
-			}
-			
+			_loadedBitmapData = new Bitmap(_bitdraw);				
 			return _loadedBitmapData;
-		}
+		}	
 		
 		
-		
-		public function get bitmapData():BitmapData{	
-			
+		public function get bitmapData():BitmapData{			
 			return _bitdraw;
 		}
 		

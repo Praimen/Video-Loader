@@ -116,9 +116,7 @@ package trh.helpers
 		private function percentLoaded(tEvent:TimerEvent):void{			
 			_loadedPercent = (_ns.bytesLoaded/_ns.bytesTotal) * 100;	
 			
-			_loadedTimePercentage = duration * (_loadedPercent/100);
-			trace("Load Percentage:" + _loadedPercent)
-			trace("Time Percentage:" + _loadedTimePercentage)
+			_loadedTimePercentage = duration * (_loadedPercent/100);			
 			if(_loadedPercent == 100){	
 				intervalTimer.stop();
 				intervalTimer.removeEventListener(TimerEvent.TIMER,percentLoaded);

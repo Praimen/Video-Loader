@@ -36,13 +36,8 @@ package
 			buttonState();		
 		}		
 		
-		public function buttonState():void{
+		public function buttonState():void{			
 			
-			/*for each (var button:Sprite in _media.buttons){				
-				button.buttonMode = false;
-				button.alpha = .10;
-				
-			}*/
 		}
 		
 		private function setBandwidth(gEvent:GlobalEvent):void{	
@@ -56,8 +51,7 @@ package
 		private function startLoadTimer():void{			
 			intervalTimer.addEventListener(TimerEvent.TIMER,checkVideo);
 			intervalTimer.start();			
-		}	
-		
+		}		
 		
 		private function checkVideo(tEvent:TimerEvent):void{	
 			//trace("check video "+ _media.video.currentPercentLoaded);
@@ -77,7 +71,7 @@ package
 		}
 		
 		private function setInitCueStart():void{
-			trace("inital load Cue");
+			//the inital start will need to change based on the Shared Object state			
 			var initCueSegment:Object = new Object();
 			//the object contains the inital cue point segment
 			var initCueName:String = _media.video.cueArray[1].name;
@@ -87,7 +81,7 @@ package
 			
 			_media.cuePoint = initCueSegment;
 			_media.btnState.checkButtonLoad();
-			_media.setPlaying();
+			_media.playingState();
 			_media.state.applyState();
 			_media.state.buttonState()
 		}
