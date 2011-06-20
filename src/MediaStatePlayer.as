@@ -3,38 +3,36 @@ package
 	import flash.display.SimpleButton;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.TimerEvent;
 	import flash.net.NetStream;
 	import flash.net.SharedObject;
 	import flash.text.*;
-	import flash.utils.Dictionary;
-	import flash.utils.getTimer;
+	import flash.utils.*;
 	
 	import trh.helpers.*;
 	
+	//your Flash program may not support this tag
 	[SWF(backgroundColor="#666666", frameRate="60", width="940", height="670")]
 	public class MediaStatePlayer extends Sprite
 	{	
-		private var button:ButtonState;
-		private var ui:UIGraphics;
-		private var _btnArray:Array;
-		private var _startEndCue:Object;
+		private var book:Book;
+		private var button:ButtonState;		
+		private var _btnArray:Array;		
 		private var buttonArray:Array;
 		private var _btnState:ButtonState;
+		private var flashCookie:FlashCookie = new FlashCookie(15);//expiration in minutes MAX 59
 		
-		private var loading:IVideoState;		
-		private var playing:IVideoState;		
-		private var waiting:IVideoState;
-		
-		private var _loadVideo:LoadVideo;		
-		private var _state:IVideoState;
-		public var testing:Boolean = false;
-		
-		private var book:Book;
+		private var loading:IVideoState;
+		private var _loadVideo:LoadVideo;
 		public var path:String = "http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/";
-		//
-		private var vidSharedObject:SharedObject = SharedObject.getLocal("superDentistVideo");;  
+		private var playing:IVideoState;
+			
+		private var _state:IVideoState;
+		private var _startEndCue:Object;
 		
-		
+		public var testing:Boolean = false;
+		private var ui:UIGraphics;
+		private var waiting:IVideoState;
 		
 		/**
 		 * Loads the initial available states and listeners 
@@ -47,10 +45,10 @@ package
 			_btnState = new ButtonState(this);
 			ui = new UIGraphics();			
 			_loadVideo = new LoadVideo(940,550);			
-			init();		
+			init();			
 		}			
 		
-		private function init():void{			
+		private function init():void{
 			//add buttons to array, 
 			//name should correspond to the cue point name
 			//posX, posY are the positions of the buttons relative to the stage
@@ -90,9 +88,8 @@ package
 				
 			//intial state is loading state   state = LoadingState.as
 			_state = loading;
-			state.applyState();			
-		}	
-		
+			state.applyState();
+		}
 		
 		public function setLoading(optVideo:String):void{			
 			if(optVideo == "high"){			
@@ -101,32 +98,25 @@ package
 			if(optVideo == "low"){				
 				_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_400.flv");	
 			}			
-		}
-				
+		}	
 		
 		public function playingState():void{				
 			//state = PlayState.as
-			_state = playing;			
-			
+			_state = playing;		
 		}
 		
 		public function waitingState():void{			
 			//state = WaitingState.as
 			_state = waiting;
-			getCuePoint("loop");	
-			
+			getCuePoint("loop");		
 		}
 		
 		public function setInitCueStart():void{
 			//the Shared Object will detect if the video has already played once before(roughly)	
-			if (vidSharedObject.data.initPlayed != "true"){	
-				vidSharedObject.data.initPlayed = "true";
-				vidSharedObject.flush();
-				vidSharedObject.close();
-				if(testing)trace("video shared object: "+vidSharedObject.data.initPlayed);
-				playingState();		
+			if (flashCookie.isExpired()){					
+				playingState();	
 			}else{
-				waitingState();
+				waitingState();			
 			}
 			
 			//the object contains the inital cue point segment			
@@ -168,10 +158,9 @@ package
 			if(video.currentPercentLoaded == 100){				
 				removeEventListener(Event.ENTER_FRAME, updateStatus);
 				book.statusTxt.text = "";
-			}
+			}			
 			
-			
-		}	
+		}
 		
 		
 ///////////////////////////////setters and getters//////////////////////
