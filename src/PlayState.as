@@ -1,34 +1,29 @@
 package
 {
-	import flash.display.*;
-	
+	import flash.display.*;	
 	import flash.events.*;
 	import flash.events.TimerEvent;
 	import flash.net.NetStream;
-	import flash.utils.Timer;
-	
+	import flash.utils.Timer;	
 	
 	public class PlayState implements IVideoState
 	{
 		private var _media:MediaStatePlayer;
 		private var intervalTimer:Timer = new Timer(500);
 		
-		public function PlayState(msObject:MediaStatePlayer)
-		{	
-			_media = msObject;
-			
-			//trace(super.videoStream);	
-			
+		public function PlayState(msObject:MediaStatePlayer){	
+			_media = msObject;			
+				
 		}
 		
 		public function applyState():void{			
 			_media.videoStream.pause();
 			
-			if(_media.btnState.activeBtnArray.length > 0){//if there is an active button use the Cue point
-				_media.videoStream.seek(_media.cuePoint.start);				
-			}else{
-				_media.videoStream.seek(0);				
-			}			
+				if(_media.btnState.activeBtnArray.length > 0){//if there is an active button use the Cue point
+					_media.videoStream.seek(_media.cuePoint.start);					
+				}else{
+					_media.videoStream.seek(0);				
+				}			
 			_media.videoStream.resume();
 			
 			startPlayingTimer();

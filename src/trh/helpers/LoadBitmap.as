@@ -7,6 +7,7 @@ package trh.helpers
 	import flash.display.*;
 	import flash.events.*;
 	import flash.net.*;
+	import flash.system.LoaderContext;
 	import flash.utils.Timer;
 	
 	
@@ -17,6 +18,7 @@ package trh.helpers
 		private var _sprite:Sprite;
 		private var loader:Loader;
 		private var regEvent:Boolean;
+		
 		//==decouple===/private var myTimer:PanelTimer;
 		
 		//this adds the parameter listenForEvents and will dispatch an event based on pixel data being present
@@ -30,10 +32,12 @@ package trh.helpers
 		
 		private function initLoadBitmap(loadURL:String, pixelW:Number, pixelH:Number):void{
 			
-			_bitdraw = new BitmapData(pixelW,pixelH, true, 0x00000000);
-			loader = new Loader();			
-			loader.contentLoaderInfo.addEventListener( Event.COMPLETE, initBitmap );
+			_bitdraw = new BitmapData(pixelW,pixelH, true, 0x00000000);				
 			
+			var loaderContext:LoaderContext = new LoaderContext();			
+			loaderContext.checkPolicyFile = true;
+			
+			loader = new Loader();		
 			
 			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onLoadError, false, 0, true);
 			loader.contentLoaderInfo.addEventListener(IOErrorEvent.NETWORK_ERROR, onLoadError, false, 0, true);
@@ -41,11 +45,9 @@ package trh.helpers
 			loader.contentLoaderInfo.addEventListener(IOErrorEvent.VERIFY_ERROR, onLoadError, false, 0, true);
 			loader.contentLoaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadError, false, 0, true);
 			
-			try{
-				loader.load(new URLRequest(loadURL));		
-			}catch(e:Error){
-				trace("Error Occurred while loading Image");	
-			}
+			loader.contentLoaderInfo.addEventListener( Event.COMPLETE, initBitmap );
+			loader.load(new URLRequest(loadURL), loaderContext );
+			
 			
 		}
 		

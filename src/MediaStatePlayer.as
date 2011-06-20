@@ -4,6 +4,7 @@ package
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.net.NetStream;
+	import flash.net.SharedObject;
 	import flash.text.*;
 	import flash.utils.Dictionary;
 	import flash.utils.getTimer;
@@ -26,8 +27,12 @@ package
 		
 		private var _loadVideo:LoadVideo;		
 		private var _state:IVideoState;
-		public var testing:Boolean = true;
-		private var statusTxt:TextField; 
+		public var testing:Boolean = false;
+		
+		private var book:Book;
+		public var path:String = "http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/";
+		//
+		private var vidSharedObject:SharedObject = SharedObject.getLocal("superDentistVideo");;  
 		
 		
 		
@@ -41,8 +46,7 @@ package
 			playing = new PlayState(this);
 			_btnState = new ButtonState(this);
 			ui = new UIGraphics();			
-			_loadVideo = new LoadVideo(800,450);
-			
+			_loadVideo = new LoadVideo(940,550);			
 			init();		
 		}			
 		
@@ -52,64 +56,47 @@ package
 			//posX, posY are the positions of the buttons relative to the stage
 			//image: link to image asset
 			//imgW and imgH are the width and height of the image asset
+			
 			buttonArray = 	[	
-								{name:"pedo1",posX:135, posY:80, image:"assets/pedo1.png",imgW:240,imgH:50},
-								{name:"pedo2",posX:135, posY:140,image:"assets/pedo2.png",imgW:240,imgH:50},
-								{name:"pedo3",posX:132, posY:200,image:"assets/pedo3.png",imgW:240,imgH:50},
-								{name:"pedo4",posX:127, posY:260,image:"assets/pedo4.png",imgW:240,imgH:50},
-								{name:"pedo5",posX:120, posY:330,image:"assets/pedo5.png",imgW:240,imgH:50},
-								{name:"ortho1",posX:395, posY:80, image:"assets/ortho1.png",imgW:240,imgH:50},
-								{name:"ortho2",posX:395, posY:140,image:"assets/ortho2.png",imgW:240,imgH:50},
-								{name:"ortho3",posX:398, posY:200,image:"assets/ortho3.png",imgW:240,imgH:50},
-								{name:"ortho4",posX:403, posY:260,image:"assets/ortho4.png",imgW:240,imgH:50},
-								{name:"ortho5",posX:410, posY:330,image:"assets/ortho5.png",imgW:240,imgH:50}	
+								{name:"pedo1",posX:135, posY:90, image:path+"assets/pedo1.png",imgW:240,imgH:50},
+								{name:"pedo2",posX:135, posY:140,image:path+"assets/pedo2.png",imgW:240,imgH:50},
+								{name:"pedo3",posX:132, posY:200,image:path+"assets/pedo3.png",imgW:240,imgH:50},
+								{name:"pedo4",posX:127, posY:260,image:path+"assets/pedo4.png",imgW:240,imgH:50},
+								{name:"pedo5",posX:120, posY:330,image:path+"assets/pedo5.png",imgW:240,imgH:50},
+								{name:"ortho1",posX:395, posY:90, image:path+"assets/ortho1.png",imgW:240,imgH:50},
+								{name:"ortho2",posX:395, posY:140,image:path+"assets/ortho2.png",imgW:240,imgH:50},
+								{name:"ortho3",posX:403, posY:200,image:path+"assets/ortho3.png",imgW:240,imgH:50},
+								{name:"ortho4",posX:408, posY:260,image:path+"assets/ortho4.png",imgW:240,imgH:50},
+								{name:"ortho5",posX:415, posY:330,image:path+"assets/ortho5.png",imgW:240,imgH:50}	
 							];
 			
 			ui.addBtns(buttonArray);
 			_btnArray = ui.uiButtonArray;
 			
 			//percentage number to start playing the video;
-			_loadVideo.startPlayPercent = 5;
+			_loadVideo.startPlayPercent = 8;
 			
 			//add visual elements order is important
 			addChild(_loadVideo.video);		
+			_loadVideo.video.y = 21;
 			
-			var book:Book = new Book();
 			
+			book = new Book();
 			book.addChild(ui);			
 			addChild(book);
 			
-			book.x = 40;
-			book.y = 145;
+			book.x = stage.width/2 - book.width/2;
+			book.y = stage.height - (book.height - 104);
 				
 			//intial state is loading state   state = LoadingState.as
 			_state = loading;
-			state.applyState();
-			statusMsgField();
-			
-		}
+			state.applyState();			
+		}	
 		
-		
-		
-		public function setInitCueStart():void{
-			//the inital start will need to change based on the Shared Object state			
-			var initCueSegment:Object = new Object();
-			//the object contains the inital cue point segment
-			var initCueName:String = video.cueArray[1].name;
-			var initCuePointStart:Number = video.cueArray[1].time;
-			var initCuePointEnd:Number = video.cueArray[2].time;
-			initCueSegment = {name:initCueName,start:initCuePointStart,end:initCuePointEnd};
-			
-			cuePoint = initCueSegment;
-			btnState.checkButtonLoad();
-			playingState();			
-			state.applyState();
-			state.buttonState()
-		}
 		
 		public function setLoading(optVideo:String):void{			
 			if(optVideo == "high"){			
-				_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_600.flv");
+				_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_400.flv");
 			}
 			if(optVideo == "low"){				
 				_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_400.flv");	
@@ -130,6 +117,34 @@ package
 			
 		}
 		
+		public function setInitCueStart():void{
+			//the Shared Object will detect if the video has already played once before(roughly)	
+			if (vidSharedObject.data.initPlayed != "true"){	
+				vidSharedObject.data.initPlayed = "true";
+				vidSharedObject.flush();
+				vidSharedObject.close();
+				if(testing)trace("video shared object: "+vidSharedObject.data.initPlayed);
+				playingState();		
+			}else{
+				waitingState();
+			}
+			
+			//the object contains the inital cue point segment			
+			var initCueName:String = video.cueArray[1].name;
+			var initCuePointStart:Number = video.cueArray[1].time;
+			var initCuePointEnd:Number = video.cueArray[2].time;				
+			
+			var initCueSegment:Object = {name:initCueName,start:initCuePointStart,end:initCuePointEnd};
+			cuePoint = initCueSegment;
+			btnState.checkButtonLoad();
+			
+				
+			state.applyState();
+			state.buttonState();
+			addEventListener(Event.ENTER_FRAME, updateStatus);
+		}
+		
+		
 		//this controls the playing of the segments and which segments play
 		public function getCuePoint(cueName:String):void{			
 			var cueArray:Array = video.cueArray;			
@@ -146,27 +161,17 @@ package
 			cuePoint = cuePointObject;
 			state.applyState();
 			state.buttonState();				
-		}
+		}		
 		
-		private function statusMsgField():void	{
-			var embFonts:EmbedFonts = new EmbedFonts(30);			
-			statusTxt = new TextField;
-			statusTxt.defaultTextFormat = embFonts.format;				
-			statusTxt.autoSize = TextFieldAutoSize.CENTER;			
-			statusTxt.textColor = 0xFFFFFF;
-			statusTxt.text = "Loading.."; 
-			statusTxt.embedFonts = true;			
-			statusTxt.x = (this.width/2);
-			statusTxt.y = this.height - (statusTxt.height-5);
-			statusTxt.width = 50;
-			statusTxt.height = 50;
-			addChild(statusTxt);		
-		}
-		
-		public function updateStatus(message:*):void{
-			statusTxt.text = message; 
-		}
-	
+		public function updateStatus(evt:Event):void{
+			book.statusTxt.text = String(video.currentPercentLoaded+"%");
+			if(video.currentPercentLoaded == 100){				
+				removeEventListener(Event.ENTER_FRAME, updateStatus);
+				book.statusTxt.text = "";
+			}
+			
+			
+		}	
 		
 		
 ///////////////////////////////setters and getters//////////////////////

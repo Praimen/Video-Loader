@@ -6,6 +6,7 @@ package
 	import flash.media.Video;
 	import flash.net.NetStream;
 	import flash.utils.Timer;
+	
 	import trh.helpers.BandwidthChecker;
 	import trh.helpers.GlobalDispatcher;
 	import trh.helpers.GlobalEvent;
@@ -31,7 +32,7 @@ package
 	
 		public function checkBandwidth():void{
 			if(_media.testing)trace("got video");
-			bandwidthChecker = new BandwidthChecker("http://www.drvollenweider.com/Portals/_default/Skins/siteSkin/images/arctic_test.bmp");					
+			bandwidthChecker = new BandwidthChecker(_media.path+"/bandwith_test.bmp");					
 			buttonState();		
 		}		
 		
@@ -53,7 +54,7 @@ package
 		}		
 		
 		private function checkVideo(tEvent:TimerEvent):void{
-			_media.updateStatus(_media.video.currentPercentLoaded+"%");
+			_media.updateStatus(new Event(Event.INIT));
 			//trace("check video "+ _media.video.currentPercentLoaded);			
 			if(_media.video.currentPercentLoaded >= _media.video.startPlayPercent){				
 				intervalTimer.stop();
