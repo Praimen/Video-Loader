@@ -18,28 +18,32 @@ package trh.helpers{
 		
 		private function doesCookieExist():void {			
 			if (so.data.lastPlayed){
-				lastPlayed = so.data.lastPlayed ;
+				trace("Getting Exisiting Value: "+so.data.lastPlayed)
+				lastPlayed = so.data.lastPlayed;
 			}else{
 				saveValue();
 			}
 		}
 		
 		public function isExpired():Boolean{
-			trace("Flash Cookie: "+Math.abs(now.minutes - lastPlayed));
+			var timeLapse:Number = Math.abs(now.minutes - lastPlayed)
 			if ( Math.abs(now.minutes - lastPlayed) > expirationTime) {
-				so.clear();									
+				trace("Flash Cookie: "+ timeLapse);
+				so.clear();	
+				
 				return true;
 			}else{
-				
+				trace("the time has not expired: "+	Math.abs(now.minutes - lastPlayed));
 				return false;				
 			}
 		}
 		
 		private function saveValue():void {			
-			so.data.lastPlayed = now.minutes;			
-			try {				
-				so.flush();
-				so.close();				
+			so.data.lastPlayed = now.minutes;	
+			
+			try {	
+				trace("Saved Value: "+so.data.lastPlayed)
+				so.flush();							
 			} catch (error:Error) {
 				trace("Could not write SharedObject to disk");
 			}
