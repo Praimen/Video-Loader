@@ -23,6 +23,7 @@ package trh.helpers{
 				if(testing)trace("Getting Exisiting Value: "+so.data.lastPlayed);
 				lastPlayed = so.data.lastPlayed;
 			}else{
+				
 				saveValue();
 			}
 		}
