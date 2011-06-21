@@ -4,10 +4,12 @@ package trh.helpers{
 	
 	public class FlashCookie {
 		
+		public var expirationTime:Number;// minutes
 		private var so:SharedObject;
 		private var now:Date;
 		private var lastPlayed:Number;
-		public var expirationTime:Number;// minutes
+		private var testing:Boolean = false;
+		
 		
 		public function FlashCookie(expire:Number=20) {			
 			now = new Date;			
@@ -18,7 +20,7 @@ package trh.helpers{
 		
 		private function doesCookieExist():void {			
 			if (so.data.lastPlayed){
-				trace("Getting Exisiting Value: "+so.data.lastPlayed)
+				if(testing)trace("Getting Exisiting Value: "+so.data.lastPlayed);
 				lastPlayed = so.data.lastPlayed;
 			}else{
 				saveValue();
@@ -27,26 +29,23 @@ package trh.helpers{
 		
 		public function isExpired():Boolean{
 			var timeLapse:Number = Math.abs(now.minutes - lastPlayed);
-			if ( timeLapse > expirationTime || isNaN(timeLapse)) {
-				trace("Flash Cookie: "+ timeLapse);
-				so.clear();	
-				
+			if ( timeLapse >= expirationTime || isNaN(timeLapse)) {
+				if(testing)trace("Now Minutes: "+ now.minutes+"  Last Played: "+lastPlayed);	
+				saveValue();
 				return true;
 			}else{
-				trace("the time has not expired: "+	timeLapse);
+				if(testing)trace("the time has not expired: "+	timeLapse);
 				return false;				
 			}
 		}
 		
-		private function saveValue():void {			
-			so.data.lastPlayed = now.minutes;	
-			
+		private function saveValue():void {
 			try {	
-				trace("Saved Value: "+so.data.lastPlayed)
-				so.flush();
-				so.close();
+				if(testing)trace("Saved Value: "+so.data.lastPlayed)
+				so.data.lastPlayed = now.minutes;
+				so.flush();				
 			} catch (error:Error) {
-				trace("Could not write SharedObject to disk");
+				if(testing)trace("Could not write SharedObject to disk");
 			}
 		}		
 		
