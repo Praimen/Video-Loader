@@ -113,9 +113,9 @@ package
 		
 		public function setInitCueStart():void{
 			//the Shared Object will detect if the video has already played once before(roughly)	
-			if (flashCookie.isExpired()){					
+			if (flashCookie.isExpired()){				
 				playingState();	
-			}else{
+			}else{				
 				waitingState();			
 			}
 			
