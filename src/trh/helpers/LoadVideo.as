@@ -59,8 +59,7 @@ package trh.helpers
 		
 		private function playVideo():void{			
 			_vid.smoothing = true;				
-			_vid.attachNetStream(_ns);
-			//_vid.x = stage.stageWidth - (_vid.width/1.5);//custom positioning of video				
+			_vid.attachNetStream(_ns);					
 			_ns.play(videoURL);	
 			
 		}	
@@ -78,10 +77,10 @@ package trh.helpers
 		}
 		
 		private function metaDataHandler(infoObject:Object):void {
-			_cuePoints = new Array();
+			_cuePoints = [];
 			for (var propName:String in infoObject) {				
 				if(propName == "cuePoints"){					
-					for(var i:Number = 0; i < infoObject.cuePoints.length; i++){
+					for(var i:int = 0; i < infoObject.cuePoints.length; i++){
 						var oCue:Object = infoObject.cuePoints[i];
 						trace("\t\t" + i + ": " + oCue.name + ", " + oCue.type+ ", " + oCue.time);								
 						_cuePoints[i] = oCue;
@@ -120,7 +119,7 @@ package trh.helpers
 			if(_loadedPercent == 100){	
 				intervalTimer.stop();
 				intervalTimer.removeEventListener(TimerEvent.TIMER,percentLoaded);
-				
+				intervalTimer = null;
 			}
 		}
 		

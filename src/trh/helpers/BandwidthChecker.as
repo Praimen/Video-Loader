@@ -52,15 +52,10 @@
 			trace("start Loading the test image");
 			intervalTimer = new Timer(time, 1);
 			intervalTimer.addEventListener(TimerEvent.TIMER,avgDLSpeed);
-			intervalTimer.start();
-			
-			//loader.contentLoaderInfo.addEventListener(ProgressEvent.PROGRESS, currentLoadedBytes);			
+			intervalTimer.start();					
 		}
 		
-		/*private function currentLoadedBytes(e:Event):void{
-			currentBytesDownloaded = loader.contentLoaderInfo.bytesLoaded;
-			trace("currentDownloaded: "+currentBytesDownloaded);
-		}*/
+		
 	
 		
 		protected function onLoadError(event:Event):void {
@@ -85,6 +80,8 @@
 		}
 
 		protected function DLComplete(event:Event):void {
+			intervalTimer.stop();
+			intervalTimer.removeEventListener(TimerEvent.TIMER,avgDLSpeed);
 			removeListeners();
 			intervalTimer = null;
 			loader = null;
@@ -109,20 +106,20 @@
 		}
 		
 		protected function addListeners():void {
-			loader.contentLoaderInfo.addEventListener(Event.OPEN, onLoadStart, false, 0, true);
-			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, DLComplete, false, 0, true);
+			loader.contentLoaderInfo.addEventListener(Event.OPEN, onLoadStart);
+			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, DLComplete);
 			
-			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onLoadError, false, 0, true);
-			loader.contentLoaderInfo.addEventListener(IOErrorEvent.NETWORK_ERROR, onLoadError, false, 0, true);
-			loader.contentLoaderInfo.addEventListener(IOErrorEvent.DISK_ERROR, onLoadError, false, 0, true);
-			loader.contentLoaderInfo.addEventListener(IOErrorEvent.VERIFY_ERROR, onLoadError, false, 0, true);
-			loader.contentLoaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadError, false, 0, true);
+			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
+			loader.contentLoaderInfo.addEventListener(IOErrorEvent.NETWORK_ERROR, onLoadError);
+			loader.contentLoaderInfo.addEventListener(IOErrorEvent.DISK_ERROR, onLoadError);
+			loader.contentLoaderInfo.addEventListener(IOErrorEvent.VERIFY_ERROR, onLoadError);
+			loader.contentLoaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadError);
 		}
 		
 		protected function removeListeners():void {
 			loader.contentLoaderInfo.removeEventListener(Event.OPEN, onLoadStart);
 			loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, DLComplete);
-
+			
 			loader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, onLoadError);
 			loader.contentLoaderInfo.removeEventListener(IOErrorEvent.NETWORK_ERROR, onLoadError);
 			loader.contentLoaderInfo.removeEventListener(IOErrorEvent.DISK_ERROR, onLoadError);

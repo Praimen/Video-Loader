@@ -8,13 +8,13 @@ package
 			
 		private var _uiButtonArray:Array;		
 		public function UIGraphics(){
-			_uiButtonArray = new Array;
+			_uiButtonArray = [];
 		}
 		
 		public function addBtns(buttons:Array):void{	
-			
-			for(var i:Number = 0; i<buttons.length;i++){
-				var button:Sprite = new Sprite;	
+				
+			for(var i:int = 0; i<buttons.length;i++){
+				var button:Sprite = new Sprite;
 				var imageLoad:LoadBitmap = new LoadBitmap(buttons[i].image, buttons[i].imgW, buttons[i].imgH)
 				button.addChild(imageLoad.sprite);
 				button.name = buttons[i].name;

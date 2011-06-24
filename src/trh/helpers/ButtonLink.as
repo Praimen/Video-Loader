@@ -34,15 +34,11 @@
 		}
 		
 		private function buttonOn(event:MouseEvent):void{			
-			_currentButton.alpha = 1;
-			_currentButton.alpha = 1;
-			
+			_currentButton.alpha = 1;			
 		}
 		
 		private function buttonOff(event:MouseEvent):void{			
-			_currentButton.alpha = .5;
-			_currentButton.alpha = .5;
-			
+			_currentButton.alpha = 1;			
 		}	
 		
 	}	

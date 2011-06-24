@@ -10,6 +10,8 @@ package
 	{
 		private var _media:MediaStatePlayer;
 		private var intervalTimer:Timer = new Timer(500);
+		private var btnActiveAlpha:Number = 1;
+		private var btnNotActiveAlpha:Number = .5;
 		
 		public function PlayState(msObject:MediaStatePlayer){	
 			_media = msObject;			
@@ -33,9 +35,10 @@ package
 		public function buttonState():void{			
 			for each (var button:Sprite in  _media.btnState.activeBtnArray){					
 				if(button.name == _media.cuePoint.name){
-					button.alpha = 1;					
+					button.alpha = btnActiveAlpha;					
 				}else{
-					button.alpha = .25;					
+					button.alpha = btnNotActiveAlpha;					
+					
 				}			
 			}			
 		}
@@ -43,10 +46,19 @@ package
 		private function buttonStateUpdate(tEvent:TimerEvent):void{
 			for each (var button:Sprite in  _media.btnState.activeBtnArray){
 				//buggy event being added fix later	
-				//may involve a loader listener
+				//may involve a loader listener	
+				
 				button.addEventListener(MouseEvent.CLICK, runCuePoint);
 			}
 		}
+		
+		private function buttonOn(evt:MouseEvent):void{			
+			evt.currentTarget.alpha = btnActiveAlpha;			
+		}
+		
+		private function buttonOff(evt:MouseEvent):void{			
+			evt.currentTarget.alpha = btnNotActiveAlpha;			
+		}	
 		
 		public function runCuePoint(evt:Event):void{
 			//sets the playing state with the but name as the cue point name					
