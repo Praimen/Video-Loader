@@ -11,7 +11,7 @@ package
 		private var pedoBtn:Sprite = new Sprite();
 		private var bracesBtn:Sprite = new Sprite();
 		private var whatBtn:Sprite = new Sprite();
-		private var embFonts:EmbedFonts;
+		private var embFonts:EmbedFonts = new EmbedFonts(20);
 		private var loadButtonImage:LoadBitmap;
 		private var loadBook:LoadBitmap;
 		public var statusTxt:TextField;
@@ -26,8 +26,9 @@ package
 		 * 	
 		 */
 		public function Book(){
-				
-			init()
+			
+			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.FONT_LOADED, statusMsgField);	
+			init();
 			
 		}
 		
@@ -68,14 +69,16 @@ package
 			addChild(bracesBtn);
 			addChild(pedoBtn);
 			
-			statusMsgField();
+			//statusMsgField();
+			
 		}
 		
 		/**
 		 *  creates the loading status text field for the video player	
 		 */
-		private function statusMsgField():void	{
-			embFonts = new EmbedFonts(20);			
+		private function statusMsgField(event:GlobalEvent):void	{
+			trace("hey Text Created");
+			
 			statusTxt = new TextField;
 			statusTxt.defaultTextFormat = embFonts.format;				
 			statusTxt.autoSize = TextFieldAutoSize.CENTER;			
@@ -92,7 +95,7 @@ package
 		public function cleanUp():void{
 			removeChild(statusTxt);
 			statusTxt = null;
-			embFonts = null;
+			//embFonts = null;
 		}
 		
 		

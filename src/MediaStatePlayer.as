@@ -40,7 +40,8 @@ package
 		 * 
 		 * 	
 		 */
-		public function MediaStatePlayer(){				
+		public function MediaStatePlayer(){	
+			
 			loading = new LoadingState(this);
 			waiting = new WaitingState(this);
 			playing = new PlayState(this);
@@ -87,7 +88,7 @@ package
 			_btnArray = ui.uiButtonArray;
 			
 			//percentage number to start playing the video;
-			_loadVideo.startPlayPercent = 8;
+			_loadVideo.startPlayPercent = 1;
 			
 			//add visual elements order is important
 			addChild(_loadVideo.video);		
@@ -215,13 +216,16 @@ package
 		 * 	the video has fully loaded it will remove the handler  	
 		 */		
 		public function updateStatus(evt:Event):void{
-			book.statusTxt.text = String(video.currentPercentLoaded+"%");
-			if(video.currentPercentLoaded == 100){	
-				trace("stop status");
-				removeEventListener(Event.ENTER_FRAME, updateStatus);
-				book.statusTxt.text = "";
-				book.cleanUp();
-			}			
+			
+			if(book.statusTxt != null){
+				book.statusTxt.text = String(video.currentPercentLoaded+"%");
+				if(video.currentPercentLoaded == 100){	
+					
+					removeEventListener(Event.ENTER_FRAME, updateStatus);
+					book.statusTxt.text = "";
+					book.cleanUp();
+				}		
+			}
 		}
 		
 		

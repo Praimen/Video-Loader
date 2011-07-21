@@ -11,6 +11,7 @@ package trh.helpers
 		public static const VIDEO_PLAYING:String = "video playing";
 		public static const BANDWIDTH_COMPLETE:String = "bandwith complete";
 		public static const META_INFO:String = "meta info";
+		public static const FONT_LOADED:String = "font loaded";
 		
 		//public var params:Object;
 	
