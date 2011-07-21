@@ -88,7 +88,7 @@ package
 			_btnArray = ui.uiButtonArray;
 			
 			//percentage number to start playing the video;
-			_loadVideo.startPlayPercent = 1;
+			_loadVideo.startPlayPercent = 8;
 			
 			//add visual elements order is important
 			addChild(_loadVideo.video);		

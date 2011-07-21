@@ -3,7 +3,7 @@ package trh.helpers {
 	import flash.text.*;
 	
 	public class EmbedFonts { 
-		[Embed(source='assets/CALIBRIB.TTF', fontName='calibrib',embedAsCFF = 'false')] 
+		[Embed(source='assets/MyriadPro-Semibold.otf', fontName='calibrib',embedAsCFF = 'false')] 
 		
 		private var MyriadPro:Class; 
 		
