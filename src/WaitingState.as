@@ -4,29 +4,36 @@ package
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
-	import flash.utils.Timer;	
+	import flash.media.Sound;
+	import flash.media.SoundTransform;
+	import flash.utils.Timer;
 	
 	public class WaitingState implements IVideoState{	
 		
 		private var _media:MediaStatePlayer;
-		private var intervalTimer:Timer = new Timer(500);
+		private var intervalTimer:Timer = new Timer(3500);
 		private var btnActiveAlpha:Number = 1;
 		private var btnNotActiveAlpha:Number = .5;
+		//private var videoSound:Sound = new Sound();
 		
 		public function WaitingState(msObject:MediaStatePlayer){			
 			_media = msObject;						
 		}
 		
-		public function applyState():void{			
-			_media.videoStream.pause();			
-			_media.videoStream.seek(_media.cuePoint.start);				
+		public function applyState():void{
+			
+			_media.videoStream.pause();	
+			
+			_media.videoStream.seek(_media.cuePoint.start);
+			
 			_media.videoStream.resume();
 			startWaitingTimer();			
 		}		
 		
 		public function buttonState():void{
 			
-			for each (var button:Sprite in  _media.btnState.activeBtnArray){				
+			for each (var button:Sprite in  _media.btnState.activeBtnArray){
+				//_media.book.statusTxt.text = String("w"+ button);
 				button.alpha = btnActiveAlpha;
 				button.useHandCursor = true;				
 				
@@ -48,7 +55,7 @@ package
 			_media.getCuePoint(evt.currentTarget.name);			
 		}		
 		
-		private function startWaitingTimer():void{			
+		private function startWaitingTimer():void{				
 			intervalTimer.addEventListener(TimerEvent.TIMER,waitingLoop);
 			intervalTimer.start();			
 		}		

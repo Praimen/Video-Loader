@@ -100,7 +100,7 @@ package trh.helpers
 				case "NetStream.Play.Start":
 					//starts the video as the first inital play through and pauses the video for buffering
 					//trace("starting");
-					_ns.pause();					
+					//_ns.pause();					
 				break;
 				
 				case "NetStream.Buffer.Empty":
@@ -116,7 +116,7 @@ package trh.helpers
 			//trace("loaded Percentage: "+_loadedPercent)
 			_loadedTimePercentage = duration * (_loadedPercent/100);
 			//trace("Time Percentage: "+ _loadedTimePercentage)
-			if(_loadedPercent == 100){	
+			if(_loadedPercent > 99){	
 				intervalTimer.stop();
 				intervalTimer.removeEventListener(TimerEvent.TIMER,percentLoaded);
 				intervalTimer = null;

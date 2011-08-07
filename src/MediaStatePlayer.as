@@ -7,15 +7,14 @@ package
 	import flash.net.NetStream;
 	import flash.net.SharedObject;
 	import flash.text.*;
-	import flash.utils.*;
+	import flash.utils.*;	
 	
 	import trh.helpers.*;
-	
 	
 	[SWF(backgroundColor="#666666", frameRate="60", width="940", height="670")]
 	public class MediaStatePlayer extends Sprite
 	{	
-		private var book:Book;
+		public var book:Book;
 		private var button:ButtonState;		
 		private var _btnArray:Array;		
 		private var buttonArray:Array;
@@ -35,6 +34,7 @@ package
 		private var ui:UIGraphics;
 		private var waiting:IVideoState;
 		
+		
 		/**
 		 *  This is the Main Constructor
 		 * 
@@ -42,12 +42,14 @@ package
 		 */
 		public function MediaStatePlayer(){	
 			
+			
 			loading = new LoadingState(this);
 			waiting = new WaitingState(this);
 			playing = new PlayState(this);
 			_btnState = new ButtonState(this);
 			ui = new UIGraphics();			
-			_loadVideo = new LoadVideo(940,550);			
+			_loadVideo = new LoadVideo(940,550);
+			
 			init();			
 		}
 		
@@ -68,6 +70,7 @@ package
 		 * accessible by other states that have a reference to the MediaStatePlayer Object</p> 
 		 * 
 		 */
+		
 		
 		private function init():void{	
 			
@@ -98,13 +101,14 @@ package
 			book = new Book();
 			book.addChild(ui);			
 			addChild(book);
-			
+				
 			book.x = stage.width*.5 - book.width*.5;
 			book.y = stage.height - (book.height - 104);
 				
 			//intial state is loading state   state = LoadingState.as
 			_state = loading;
-			state.applyState();
+			this.state.applyState();
+			
 		}
 		
 		
@@ -115,8 +119,9 @@ package
 		 * 	
 		 */
 		public function setLoading(optVideo:String):void{			
-			if(optVideo == "high"){			
+			if(optVideo == "high"){	
 				_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_400.flv");
+				//_loadVideo.addVideo("http://websb1.televoxsites.com/thesuperdentists.com/final_400.flv");
 			}
 			if(optVideo == "low"){				
 				_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_400.flv");	
@@ -139,7 +144,7 @@ package
 		public function waitingState():void{			
 			//state = WaitingState.as
 			_state = waiting;
-			getCuePoint("loop");		
+			this.getCuePoint("loop");		
 		}
 		
 		
@@ -166,19 +171,20 @@ package
 			var initCuePointEnd:Number = video.cueArray[2].time;				
 			
 			var initCueSegment:Object = {name:initCueName,start:initCuePointStart,end:initCuePointEnd};
-			cuePoint = initCueSegment;
+			this.cuePoint = initCueSegment;
 			
-			state.applyState();
-			state.buttonState();
+			this.state.applyState();
+			this.state.buttonState();
 			addEventListener(Event.ENTER_FRAME, updateStatus);
 		}
 		
 		public function getFlashCookie():void{
 			if (flashCookie.isExpired()){				
-				playingState();	
-				setInitCueStart();
-			}else{				
+				this.playingState();	
+				this.setInitCueStart();
+			}else{	
 				waitingState();				
+				
 			}
 		}		
 		
@@ -198,6 +204,7 @@ package
 			for(var i:int = 0; i < cbLen; i++){
 				if(video.cueArray[i].name == cueName){					
 					cuePointObject = {name:cueName, start:cueArray[i].time, end:cueArray[i+1].time};
+					
 				}else if (cueName == null){
 					waitingState();
 					break;
@@ -206,9 +213,10 @@ package
 			//testing
 			if(testing)trace("media cue array: "+ cuePointObject.name + " cuePointObject.start: " + cuePointObject.start+ " cuePointObject.end: "+ cuePointObject.end);
 			
-			cuePoint = cuePointObject;
-			state.applyState();
-			state.buttonState();				
+			this.cuePoint = cuePointObject;
+			this.state.applyState();
+			this.state.buttonState();		
+			
 		}
 		
 		/**

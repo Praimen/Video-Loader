@@ -1,4 +1,4 @@
-package
+ package
 {
 	import flash.display.*;
 	import flash.events.*;
@@ -8,11 +8,12 @@ package
 	public class ButtonState extends Sprite	{
 		
 		private var _media:MediaStatePlayer;
-		private var intervalTimer:Timer = new Timer(500);
+		private var intervalTimer:Timer = new Timer(2000);
 		private var checkButtonArray:Array;
 		private var _activated:Array;
 		private var btnActiveAlpha:Number = .5;
 		private var btnNotActiveAlpha:Number = .1;
+		
 		
 		
 		/**
@@ -25,6 +26,7 @@ package
 			_media = msObject;		
 			_activated = [];
 			checkButtonArray = [];
+			
 		}
 		
 		
@@ -40,41 +42,52 @@ package
 		 * 
 		 * 	@param msObject the reference to the main MediaStatePlayer Object
 		 */
-		private function checkButtonActivation(tEvent:TimerEvent):void{			
-			var mediaLen:int = _media.video.cueArray.length;			
+		
+		
+			
+		private function checkButtonActivation(tEvent:TimerEvent):void{	
+			
+			var mediaLen:int = _media.video.cueArray.length;
+			
 			for (var i:int = 0; i < checkButtonArray.length; i++){			
 				var button:Sprite = checkButtonArray[i];
 				
 					for (var j:int = 0; j< mediaLen; j++){	
 						var mediaArray:Array = _media.video.cueArray[j];	
-						var buttonName:String = mediaArray.name;
-						var buttonTime:Number = mediaArray.time;	
+						var buttonName:String = String(mediaArray.name);
+						var buttonTime:int = int(mediaArray.time);	
 							if(buttonName == button.name){
 							
-								if ((buttonTime < _media.video.timeLoaded) && (button.name == buttonName)){
+								if ((buttonTime < int(_media.video.timeLoaded)) && (button.name == buttonName)){
 									button.alpha = btnActiveAlpha;	
 									button.buttonMode = true;
 									
-									if(_media.testing)trace("Button name: "+ button.name+" | | "+"Button Time: "+buttonTime+" | | "+"Video Time: "+_media.video.timeLoaded);
+									/*if(_media.testing)*/trace("Button name: "+ button.name+" | | "+"Button Time: "+buttonTime+" | | "+"Video Time: "+_media.video.timeLoaded);
 									_activated[j] = button;
-									checkButtonArray.splice(i, 1)
+									checkButtonArray.splice(i, 1);
+									return;
 									
 								}else{
 									button.alpha = btnNotActiveAlpha;
 									button.buttonMode = false;
 									button.useHandCursor = false;
+									return;
 								}
 							}
 					}//j for end
 					
 			}//i for end
 			
+			
+			
 			if(checkButtonArray.length == 0){
 				intervalTimer.stop();
+				
 				intervalTimer.removeEventListener(TimerEvent.TIMER,checkButtonActivation);
 				intervalTimer = null;
 				checkButtonArray = null;		
 			}
+			trace("checkbutton array: "+ checkButtonArray);
 		}		
 		
 		/**
