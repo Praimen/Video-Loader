@@ -100,7 +100,7 @@ package trh.helpers
 				case "NetStream.Play.Start":
 					//starts the video as the first inital play through and pauses the video for buffering
 					//trace("starting");
-					//_ns.pause();					
+					GlobalDispatcher.GetInstance().dispatchEvent(new GlobalEvent(GlobalEvent.VIDEO_PLAY));				
 				break;
 				
 				case "NetStream.Buffer.Empty":

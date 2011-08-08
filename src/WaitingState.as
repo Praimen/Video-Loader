@@ -27,7 +27,7 @@ package
 			_media.videoStream.seek(_media.cuePoint.start);
 			
 			_media.videoStream.resume();
-			startWaitingTimer();			
+			startWaitingTimer();		
 		}		
 		
 		public function buttonState():void{

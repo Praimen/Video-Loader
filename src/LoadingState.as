@@ -42,10 +42,13 @@ package
 			_media = msObject;		
 			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.BANDWIDTH_COMPLETE, setBandwidth);	
 			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.META_INFO, setStateInitPlaying);
+			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.VIDEO_PLAY, videoPause);
+			
 		}
 		
 		
-		public function applyState():void{			
+		public function applyState():void{	
+				
 			checkBandwidth();
 		}
 	
@@ -59,11 +62,17 @@ package
 			_media.btnState.checkButtonLoad();			
 		}
 		
+		private function videoPause(gEvent:GlobalEvent):void{	
+			_media.videoStream.pause();	
+			GlobalDispatcher.GetInstance().removeEventListener(GlobalEvent.VIDEO_PLAY, videoPause);
+		}
+		
 		private function setBandwidth(gEvent:GlobalEvent):void{	
 			if(_media.testing)trace("bandwith complete");
 			GlobalDispatcher.GetInstance().removeEventListener(GlobalEvent.BANDWIDTH_COMPLETE, setBandwidth);
 			_bandwidthVideoSize = bandwidthChecker.bandwidth;
 			_media.setLoading(_bandwidthVideoSize);
+			
 			_bandwidthVideoSize = null;
 			bandwidthChecker = null;
 			startLoadTimer();			
@@ -76,9 +85,12 @@ package
 		
 		private function checkVideo(tEvent:TimerEvent):void{
 			_media.updateStatus(new Event(Event.INIT));
+			
+			
 			//trace("check video "+ _media.video.currentPercentLoaded);			
 			if(_media.video.currentPercentLoaded >= _media.video.startPlayPercent){				
 				///the resume here with intiate the MetaData event in the VideoStream Object 
+				
 				_media.videoStream.resume();			
 			}
 			
@@ -90,9 +102,8 @@ package
 		
 		private function setStateInitPlaying(evt:Event):void{
 			//once meta data event is triggered then the video is paused to gather the inital cue points
-			GlobalDispatcher.GetInstance().removeEventListener(GlobalEvent.META_INFO, setStateInitPlaying);
+			GlobalDispatcher.GetInstance().removeEventListener(GlobalEvent.META_INFO, setStateInitPlaying);			
 			
-			//_media.videoStream.pause();	
 			buttonState();
 			_media.getFlashCookie();			
 		}

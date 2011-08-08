@@ -73,6 +73,8 @@ package
 		
 		
 		private function init():void{	
+			_state = loading;
+			this.state.applyState();
 			
 			buttonArray = 	[	
 								{name:"pedo1",posX:135, posY:90, image:path+"assets/pedo1.png",imgW:240,imgH:50},
@@ -106,8 +108,7 @@ package
 			book.y = stage.height - (book.height - 104);
 				
 			//intial state is loading state   state = LoadingState.as
-			_state = loading;
-			this.state.applyState();
+			
 			
 		}
 		
@@ -125,7 +126,8 @@ package
 			}
 			if(optVideo == "low"){				
 				_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_400.flv");	
-			}			
+			}
+			
 		}
 		
 		/**
