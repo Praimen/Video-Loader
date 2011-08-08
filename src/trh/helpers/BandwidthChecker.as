@@ -1,7 +1,6 @@
 ﻿package trh.helpers {
 	
-	import flash.display.Loader;
-	import flash.display.Sprite;
+	import flash.display.*;	
 	import flash.events.*;
 	import flash.net.URLRequest;
 	import flash.system.Capabilities;
@@ -16,7 +15,7 @@
 		private var _bandwidthDetected:String;
 		private var bandwidthSpeedDetected:Number;
 		private var currentBytesDownloaded:int;
-		private var intervalTimer:Timer;
+		private var intervalTimer:Timer = new Timer(5000);	
 		private var time:Number = 5000;
 		private var testFile:String;
 		private var loader:Loader;
@@ -28,8 +27,7 @@
 			loader = new Loader();
 			addListeners();
 			loadTestAsset();
-			
-			
+				
 		}
 		
 /////////////////////////////////////////////////////////////////////////////
@@ -38,10 +36,10 @@
 
 		private function loadTestAsset():void {	
 			
-			request = new URLRequest(testFile + cacheBlocker());			
+			request = new URLRequest(testFile);// + cacheBlocker()			
 			loader.load(request);
-			
-		
+			intervalTimer.addEventListener(TimerEvent.TIMER,avgDLSpeed);					
+			intervalTimer.start();	
 		}
 
 /////////////////////////////////////////////////////////////////////////////
@@ -50,9 +48,8 @@
 
 		protected function onLoadStart(event:Event):void {	
 			trace("start Loading the test image");
-			intervalTimer = new Timer(time, 1);
-			intervalTimer.addEventListener(TimerEvent.TIMER,avgDLSpeed);
-			intervalTimer.start();					
+			
+					
 		}
 		
 		
@@ -62,9 +59,11 @@
 			_bandwidthDetected = DEFAULT_BANDWIDTH;
 			bandwidthSpeedDetected = DEFAULT_BANDWIDTH_SPEED;
 			DLComplete(event);
+			trace("Error Loading SWF file");
 		}
 		
-		private function avgDLSpeed(tEvent:TimerEvent):void{			
+		private function avgDLSpeed(tEvent:TimerEvent):void{
+			trace("get average download speed");
 			//this function will run after the timer delay has expired
 			//at that time the current bytes downloaded will be calculated against
 			//the time to get the average downloaede bytes over that time
@@ -74,26 +73,28 @@
 			_bandwidthDetected = (bandwidthSpeedDetected > DEFAULT_BANDWIDTH_SPEED) ? "high" : "low";	
 			trace("/////////////////==///bandwidth: "+ bandwidthSpeedDetected+" = "+_bandwidthDetected+"////////////////////////////////////////////////////");
 			GlobalDispatcher.GetInstance().dispatchEvent(new GlobalEvent(GlobalEvent.BANDWIDTH_COMPLETE));
-			loader.close();
-			loader.unload();
-			removeListeners();
-		}
-
-		protected function DLComplete(event:Event):void {
 			intervalTimer.stop();
 			intervalTimer.removeEventListener(TimerEvent.TIMER,avgDLSpeed);
-			removeListeners();
-			intervalTimer = null;
-			loader = null;
-			request = null;
-			testFile = null;
+		}
+
+		protected function DLComplete(event:Event):void {			
+			/*loader.close();
+			loader.unload();
+			loader = null;*/
+			trace("SWF file download completed");
+			
+			/*removeListeners();
+			intervalTimer = null;*/
+			
+			/*request = null;
+			testFile = null;*/
 		}
 		
 		
 /////////////////////////////////////////////////////////////////////////////
 //		HELPERS
 /////////////////////////////////////////////////////////////////////////////
-		protected function cacheBlocker():String {
+		/*protected function cacheBlocker():String {
 			if ((Capabilities.playerType == "External" || 
 					 Capabilities.playerType == "StandAlone")) {
 				return "";
@@ -103,9 +104,11 @@
 				var time:Number = date.getTime();
 				return "?t=" + time.toString();
 			}
-		}
+		}*/
 		
 		protected function addListeners():void {
+			
+			
 			loader.contentLoaderInfo.addEventListener(Event.OPEN, onLoadStart);
 			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, DLComplete);
 			
@@ -130,7 +133,11 @@
 		///////////////////////////////setters and getters//////////////////////
 		public function get bandwidth():String {
 			return _bandwidthDetected;
-		}		
+		}
+		
+		public function get loopSWF():DisplayObject{			
+			return loader.content;
+		}
 		
 		
 	}

@@ -18,6 +18,7 @@ package
 		private var _bandwidthVideoSize:String;
 		private var intervalTimer:Timer = new Timer(500);
 		private var _media:MediaStatePlayer;
+		private var startCount:int = 0;
 		
 		
 		/**
@@ -47,14 +48,13 @@ package
 		}
 		
 		
-		public function applyState():void{	
-				
+		public function applyState():void{			
 			checkBandwidth();
 		}
 	
 		public function checkBandwidth():void{
 			if(_media.testing)trace("got video");
-			bandwidthChecker = new BandwidthChecker(_media.path+"/bandwith_test.bmp");					
+			bandwidthChecker = new BandwidthChecker(_media.path+"/final_400_loop.swf");					
 					
 		}		
 		
@@ -72,9 +72,10 @@ package
 			GlobalDispatcher.GetInstance().removeEventListener(GlobalEvent.BANDWIDTH_COMPLETE, setBandwidth);
 			_bandwidthVideoSize = bandwidthChecker.bandwidth;
 			_media.setLoading(_bandwidthVideoSize);
-			
 			_bandwidthVideoSize = null;
-			bandwidthChecker = null;
+			_media.loop = MovieClip(bandwidthChecker.loopSWF);
+			_media.loopHolder.addChild(_media.loop);			
+			//bandwidthChecker = null;			
 			startLoadTimer();			
 		}
 		
@@ -90,8 +91,10 @@ package
 			//trace("check video "+ _media.video.currentPercentLoaded);			
 			if(_media.video.currentPercentLoaded >= _media.video.startPlayPercent){				
 				///the resume here with intiate the MetaData event in the VideoStream Object 
-				
-				_media.videoStream.resume();			
+				if(startCount == 0){
+					_media.videoStream.resume();
+					startCount = 1;
+				}
 			}
 			
 			if(_media.video.currentPercentLoaded > 99){	

@@ -18,7 +18,9 @@ package
 				
 		}
 		
-		public function applyState():void{			
+		public function applyState():void{	
+			_media.videoHolder.visible = true;
+			_media.loopHolder.visible = false;
 			_media.videoStream.pause();
 			
 				if(_media.btnState.activeBtnArray.length > 0){//if there is an active button use the Cue point
@@ -75,11 +77,12 @@ package
 		
 		private function startPlaying(tEvent:TimerEvent):void{
 			//trace("video stream Time: "+_media.videoStream.time+" |  playing cuePoints: "+_media.cuePoint.end);
-			if(_media.videoStream.time > _media.cuePoint.end){							
+			if(_media.videoStream.time > _media.cuePoint.end){	
+				trace("end of the cue point");
 				intervalTimer.stop();
 				intervalTimer.removeEventListener(TimerEvent.TIMER,startPlaying);
 				intervalTimer.removeEventListener(TimerEvent.TIMER,buttonStateUpdate);
-			 	_media.waitingState()	;				
+			 	_media.waitingState();				
 			}			
 		}		
 		

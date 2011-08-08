@@ -21,13 +21,16 @@ package
 		}
 		
 		public function applyState():void{
-			
-			_media.videoStream.pause();	
+			trace("apply waiting state");
+			_media.videoStream.pause();
+			_media.videoHolder.visible = false;
+			_media.loopHolder.visible = true;
+			/*_media.videoStream.pause();	
 			
 			_media.videoStream.seek(_media.cuePoint.start);
 			
 			_media.videoStream.resume();
-			startWaitingTimer();		
+			startWaitingTimer();*/			
 		}		
 		
 		public function buttonState():void{
@@ -65,7 +68,8 @@ package
 			if(_media.videoStream.time > _media.cuePoint.end){				
 				intervalTimer.removeEventListener(TimerEvent.TIMER,waitingLoop);
 				intervalTimer.stop();
-				_media.getCuePoint("loop");
+				
+				//_media.getCuePoint("loop");
 			}			
 		}
 		

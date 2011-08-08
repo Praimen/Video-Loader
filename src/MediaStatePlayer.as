@@ -1,7 +1,7 @@
 package
 {
-	import flash.display.SimpleButton;
-	import flash.display.Sprite;
+	
+	import flash.display.*;
 	import flash.events.Event;
 	import flash.events.TimerEvent;
 	import flash.net.NetStream;
@@ -21,6 +21,9 @@ package
 		private var _btnState:ButtonState;
 		private var cuePointObject:Object = new Object();
 		private var flashCookie:FlashCookie = new FlashCookie(15);//expiration in minutes MAX 59
+		public var loopHolder:Sprite;
+		public var videoHolder:Sprite;
+		private var _loopVideo:MovieClip;
 		
 		private var loading:IVideoState;
 		private var _loadVideo:LoadVideo;
@@ -30,7 +33,7 @@ package
 		private var _state:IVideoState;
 		private var _startEndCue:Object;
 		
-		public var testing:Boolean = false;
+		public var testing:Boolean = true;
 		private var ui:UIGraphics;
 		private var waiting:IVideoState;
 		
@@ -42,7 +45,8 @@ package
 		 */
 		public function MediaStatePlayer(){	
 			
-			
+			loopHolder = new Sprite();
+			videoHolder = new Sprite();
 			loading = new LoadingState(this);
 			waiting = new WaitingState(this);
 			playing = new PlayState(this);
@@ -96,7 +100,10 @@ package
 			_loadVideo.startPlayPercent = 8;
 			
 			//add visual elements order is important
-			addChild(_loadVideo.video);		
+			addChild(videoHolder);
+			videoHolder.addChild(_loadVideo.video);
+			addChild(loopHolder);			
+			loopHolder.visible = false;
 			_loadVideo.video.y = 21;
 			
 			
@@ -144,9 +151,11 @@ package
 		 */
 		
 		public function waitingState():void{			
-			//state = WaitingState.as
+			trace("switch to waiting state");
 			_state = waiting;
-			this.getCuePoint("loop");		
+			this.state.applyState();
+			this.state.buttonState();
+			//this.getCuePoint("loop");		
 		}
 		
 		
@@ -247,7 +256,15 @@ package
 		
 		public function get buttons():Array{			
 			return _btnArray;
-		}		
+		}
+		
+		public function set loop(value:MovieClip):void{
+			_loopVideo = value;
+		}
+		
+		public function get loop():MovieClip{
+			return _loopVideo;
+		}
 		
 		public function get video():LoadVideo{
 			return _loadVideo; 
