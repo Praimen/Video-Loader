@@ -7,11 +7,12 @@ package
 	import flash.net.NetStream;
 	import flash.net.SharedObject;
 	import flash.text.*;
+	import flash.system.Capabilities;
 	import flash.utils.*;	
 	
 	import trh.helpers.*;
 	
-	[SWF(backgroundColor="#666666", frameRate="60", width="940", height="670")]
+	[SWF(backgroundColor="#666666", frameRate="100", width="940", height="670")]
 	public class MediaStatePlayer extends Sprite
 	{	
 		public var book:Book;
@@ -73,6 +74,7 @@ package
 		
 		
 		private function init():void{	
+			
 			_state = loading;
 			this.state.applyState();
 			
@@ -109,7 +111,7 @@ package
 				
 			//intial state is loading state   state = LoadingState.as
 			
-			
+			addEventListener(Event.ENTER_FRAME,updateStatus);
 		}
 		
 		
@@ -121,11 +123,11 @@ package
 		 */
 		public function setLoading(optVideo:String):void{			
 			if(optVideo == "high"){	
-				_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_400.flv");
-				//_loadVideo.addVideo("http://websb1.televoxsites.com/thesuperdentists.com/final_400.flv");
+				//_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_400.flv");
+				_loadVideo.addVideo("http://websb1.televoxsites.com/thesuperdentists.com/final_400.flv" + cacheBlocker());
 			}
 			if(optVideo == "low"){				
-				_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_400.flv");	
+				_loadVideo.addVideo("http://websb1.televoxsites.com/thesuperdentists.com/final_400.flv" + cacheBlocker());	
 			}
 			
 		}
@@ -135,7 +137,7 @@ package
 		 */
 		
 		public function playingState():void{				
-			//state = PlayState.as
+			
 			_state = playing;		
 		}
 		
@@ -144,7 +146,7 @@ package
 		 */
 		
 		public function waitingState():void{			
-			//state = WaitingState.as
+			
 			_state = waiting;
 			this.getCuePoint("loop");		
 		}
@@ -177,15 +179,19 @@ package
 			
 			this.state.applyState();
 			this.state.buttonState();
-			addEventListener(Event.ENTER_FRAME, updateStatus);
+			
 		}
 		
 		public function getFlashCookie():void{
+			trace("flash Cookies: "+ flashCookie.isExpired())
 			if (flashCookie.isExpired()){				
 				this.playingState();	
 				this.setInitCueStart();
+				trace("playing playing state");
 			}else{	
-				waitingState();				
+				trace("playing waiting state");
+				waitingState();
+							
 				
 			}
 		}		
@@ -209,7 +215,7 @@ package
 					
 				}else if (cueName == null){
 					waitingState();
-					break;
+					
 				}
 			}
 			//testing
@@ -227,14 +233,23 @@ package
 		 */		
 		public function updateStatus(evt:Event):void{
 			
-			if(book.statusTxt != null){
 				book.statusTxt.text = String(video.currentPercentLoaded+"%");
-				if(video.currentPercentLoaded == 100){	
-					
-					removeEventListener(Event.ENTER_FRAME, updateStatus);
-					book.statusTxt.text = "";
-					book.cleanUp();
-				}		
+				if(video.currentPercentLoaded > 99 ){
+					book.statusTxt.text = "";					
+					removeEventListener(Event.ENTER_FRAME, updateStatus);								
+					//book.cleanUp();
+				}			
+		}
+		
+		private function cacheBlocker():String {
+			if ((Capabilities.playerType == "External" || 
+				Capabilities.playerType == "StandAlone")) {
+				return "";
+			}
+			else {
+				var date:Date = new Date();
+				var time:Number = date.getTime();
+				return "?t=" + time.toString();
 			}
 		}
 		

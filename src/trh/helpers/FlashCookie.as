@@ -7,21 +7,26 @@ package trh.helpers{
 		public var expirationTime:Number;// minutes
 		private var so:SharedObject;
 		private var now:Date;
-		private var lastPlayed:Number;
-		private var testing:Boolean = false;
+		private var lastDay:Number;
+		private var lastHour:Number;
+		private var lastMinute:Number;
+		private var testing:Boolean = true;
 		
 		
 		public function FlashCookie(expire:Number=20) {			
-			now = new Date;			
+			now = new Date();			
 			so = SharedObject.getLocal("flashCookie12345"); 
 			expirationTime = expire;
-			doesCookieExist();			
+			doesCookieExist();
+			if(testing)trace("Today's Day "+ now.date );
 		}
 		
 		private function doesCookieExist():void {			
-			if (so.data.lastPlayed){
-				if(testing)trace("Getting Exisiting Value: "+so.data.lastPlayed);
-				lastPlayed = so.data.lastPlayed;
+			if (so.data.lastDay){
+				if(testing)trace("Getting Exisiting Value: "+so.data.lastDay);
+				lastDay = Number(so.data.lastDay);
+				lastHour = Number(so.data.lastHour);
+				lastMinute = Number(so.data.lastMinute);
 			}else{
 				
 				saveValue();
@@ -29,22 +34,29 @@ package trh.helpers{
 		}
 		
 		public function isExpired():Boolean{
-			var timeLapse:Number = Math.abs(now.minutes - lastPlayed);
-			if ( timeLapse >= expirationTime || isNaN(timeLapse)) {
-				if(testing)trace("Now Minutes: "+ now.minutes+"  Last Played: "+lastPlayed);	
+			var timeLapseDay:Number = now.date - lastDay;
+			var timeLapseHour:Number = now.hours - lastHour;
+			var timeLapseMinutes:Number = now.minutes - lastMinute;
+			/*timeLapseDay == 0 && timeLapseHour == 0 && */
+			if ((timeLapseDay >= 0) && (timeLapseHour >= 0) && (timeLapseMinutes >= expirationTime)|| timeLapseMinutes == 0) {
+				if(testing)trace("Now Day: "+ timeLapseDay +"  Last Hour: "+timeLapseHour+"  Last Minute: "+ timeLapseMinutes);	
 				saveValue();
 				return true;
 			}else{
-				if(testing)trace("the time has not expired: "+	timeLapse);
+				if(testing)trace("Now Day: "+ timeLapseDay +"  Last Hour: "+timeLapseHour+"  Last Minute: "+ timeLapseMinutes);
 				return false;				
 			}
 		}
 		
 		private function saveValue():void {
 			try {	
-				if(testing)trace("Saved Value: "+so.data.lastPlayed)
-				so.data.lastPlayed = now.minutes;
-				so.flush();				
+				
+					
+				lastDay = so.data.lastDay = now.date
+				lastHour = so.data.lastHour = now.hours;
+				lastMinute = so.data.lastMinute = now.minutes;				
+				so.flush();		
+				if(testing)trace("Saved Value: "+so.data.lastMinute)
 			} catch (error:Error) {
 				if(testing)trace("Could not write SharedObject to disk");
 			}

@@ -48,7 +48,7 @@
 //		EVENT HANDLERS
 /////////////////////////////////////////////////////////////////////////////
 
-		protected function onLoadStart(event:Event):void {	
+		private function onLoadStart(event:Event):void {	
 			trace("start Loading the test image");
 			intervalTimer = new Timer(time, 1);
 			intervalTimer.addEventListener(TimerEvent.TIMER,avgDLSpeed);
@@ -58,7 +58,7 @@
 		
 	
 		
-		protected function onLoadError(event:Event):void {
+		private function onLoadError(event:Event):void {
 			_bandwidthDetected = DEFAULT_BANDWIDTH;
 			bandwidthSpeedDetected = DEFAULT_BANDWIDTH_SPEED;
 			DLComplete(event);
@@ -79,7 +79,7 @@
 			removeListeners();
 		}
 
-		protected function DLComplete(event:Event):void {
+		private function DLComplete(event:Event):void {
 			intervalTimer.stop();
 			intervalTimer.removeEventListener(TimerEvent.TIMER,avgDLSpeed);
 			removeListeners();
@@ -93,7 +93,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //		HELPERS
 /////////////////////////////////////////////////////////////////////////////
-		protected function cacheBlocker():String {
+		private function cacheBlocker():String {
 			if ((Capabilities.playerType == "External" || 
 					 Capabilities.playerType == "StandAlone")) {
 				return "";
@@ -105,7 +105,7 @@
 			}
 		}
 		
-		protected function addListeners():void {
+		private function addListeners():void {
 			loader.contentLoaderInfo.addEventListener(Event.OPEN, onLoadStart);
 			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, DLComplete);
 			
@@ -116,7 +116,7 @@
 			loader.contentLoaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadError);
 		}
 		
-		protected function removeListeners():void {
+		private function removeListeners():void {
 			loader.contentLoaderInfo.removeEventListener(Event.OPEN, onLoadStart);
 			loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, DLComplete);
 			

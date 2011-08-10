@@ -17,6 +17,7 @@ package
 		private var bandwidthChecker:BandwidthChecker;		
 		private var _bandwidthVideoSize:String;
 		private var intervalTimer:Timer = new Timer(500);
+		
 		private var _media:MediaStatePlayer;
 		
 		
@@ -62,10 +63,13 @@ package
 			_media.btnState.checkButtonLoad();			
 		}
 		
-		private function videoPause(gEvent:GlobalEvent):void{	
+		private function videoPause(gEvent:GlobalEvent):void{
 			_media.videoStream.pause();	
 			GlobalDispatcher.GetInstance().removeEventListener(GlobalEvent.VIDEO_PLAY, videoPause);
+			
 		}
+		
+		
 		
 		private function setBandwidth(gEvent:GlobalEvent):void{	
 			if(_media.testing)trace("bandwith complete");
@@ -102,9 +106,8 @@ package
 		
 		private function setStateInitPlaying(evt:Event):void{
 			//once meta data event is triggered then the video is paused to gather the inital cue points
-			GlobalDispatcher.GetInstance().removeEventListener(GlobalEvent.META_INFO, setStateInitPlaying);			
-			
-			buttonState();
+			GlobalDispatcher.GetInstance().removeEventListener(GlobalEvent.META_INFO, setStateInitPlaying);	
+			this.buttonState();
 			_media.getFlashCookie();			
 		}
 		

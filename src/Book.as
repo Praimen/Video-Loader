@@ -86,7 +86,8 @@ package
 			statusTxt.y = this.height - (statusTxt.height-5);
 			statusTxt.width = 50;
 			statusTxt.height = 50;
-			addChild(statusTxt);		
+			addChild(statusTxt);
+		
 		}
 		
 		public function cleanUp():void{

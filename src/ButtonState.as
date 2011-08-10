@@ -8,7 +8,7 @@
 	public class ButtonState extends Sprite	{
 		
 		private var _media:MediaStatePlayer;
-		private var intervalTimer:Timer = new Timer(2000);
+		private var intervalTimer:Timer = new Timer(200);
 		private var checkButtonArray:Array;
 		private var _activated:Array;
 		private var btnActiveAlpha:Number = .5;
@@ -24,7 +24,7 @@
 		
 		public function ButtonState(msObject:MediaStatePlayer){
 			_media = msObject;		
-			_activated = [];
+		
 			checkButtonArray = [];
 			
 		}
@@ -62,32 +62,37 @@
 									button.alpha = btnActiveAlpha;	
 									button.buttonMode = true;
 									
-									/*if(_media.testing)*/trace("Button name: "+ button.name+" | | "+"Button Time: "+buttonTime+" | | "+"Video Time: "+_media.video.timeLoaded);
-									_activated[j] = button;
+									if(_media.testing)trace("Button name: "+ button.name+" | | "+"Button Time: "+buttonTime+" | | "+"Video Time: "+_media.video.timeLoaded);
+									_activated.push(button);
 									checkButtonArray.splice(i, 1);
-									return;
+									
 									
 								}else{
 									button.alpha = btnNotActiveAlpha;
 									button.buttonMode = false;
 									button.useHandCursor = false;
-									return;
+									
 								}
+								
 							}
+							
 					}//j for end
-					
+						
 			}//i for end
 			
 			
 			
 			if(checkButtonArray.length == 0){
 				intervalTimer.stop();
+				trace("checkbutton array: "+ checkButtonArray.length);
+				trace("activeBtnArray array: "+ this.activeBtnArray.length);
+				trace("media Cue array: "+ _media.video.cueArray.length);
 				
 				intervalTimer.removeEventListener(TimerEvent.TIMER,checkButtonActivation);
 				intervalTimer = null;
 				checkButtonArray = null;		
 			}
-			trace("checkbutton array: "+ checkButtonArray);
+			
 		}		
 		
 		/**
@@ -99,6 +104,7 @@
 		 */	
 		public function checkButtonLoad():void{	
 			checkButtonArray = _media.buttons;
+			_activated = [];
 			intervalTimer.addEventListener(TimerEvent.TIMER,checkButtonActivation);
 			intervalTimer.start();			
 		}
