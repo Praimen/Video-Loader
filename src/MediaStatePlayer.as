@@ -21,7 +21,7 @@ package
 		private var buttonArray:Array;
 		private var _btnState:ButtonState;
 		private var cuePointObject:Object = new Object();
-		private var flashCookie:FlashCookie = new FlashCookie(15);//expiration in minutes MAX 59
+		private var flashCookie:FlashCookie = new FlashCookie(2);//expiration in minutes MAX 59
 		
 		private var loading:IVideoState;
 		private var _loadVideo:LoadVideo;
@@ -67,8 +67,7 @@ package
 			//load Flash Variables from page
 			this.flashVars = urlVar.flashVars;
 			path = flashVars["skinPath"];
-			xmlFile = flashVars["xmlFile"];
-			pageName = flashVars["pageName"];
+			xmlFile = flashVars["xmlFile"];			
 			if(path != null){//check to make sure there is a valid path
 				xmlLoad = new XmlLoader(path + xmlFile);
 			}else{
