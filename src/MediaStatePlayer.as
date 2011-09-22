@@ -35,15 +35,20 @@ package
 		private var ui:UIGraphics;
 		private var waiting:IVideoState;
 		
+		private var flashVars:Object = new Object();
+		private var videoXML:XML = new XML();
+		private var xmlLoad:XmlLoader;
+		private var urlVar:URLVars = new URLVars();	
+		private var xmlFile:String;
+		private var pageName:String;
+		
 		
 		/**
 		 *  This is the Main Constructor
 		 * 
 		 * 	
 		 */
-		public function MediaStatePlayer(){	
-			
-			
+		public function MediaStatePlayer(){				
 			loading = new LoadingState(this);
 			waiting = new WaitingState(this);
 			playing = new PlayState(this);
@@ -51,8 +56,49 @@ package
 			ui = new UIGraphics();			
 			_loadVideo = new LoadVideo(940,550);
 			
-			init();			
+			init();	
+			
+			loaderInfo.addEventListener(Event.COMPLETE, urlVar.loaderComplete);			
+			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.FLASHVARS_LOADED, getFlashVars);
+			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.XML_LOADED, getXML);
 		}
+		
+		private function getFlashVars(evt:GlobalEvent):void{
+			//load Flash Variables from page
+			this.flashVars = urlVar.flashVars;
+			path = flashVars["skinPath"];
+			xmlFile = flashVars["xmlFile"];
+			pageName = flashVars["pageName"];
+			if(path != null){//check to make sure there is a valid path
+				xmlLoad = new XmlLoader(path + xmlFile);
+			}else{
+				trace("invalid path or path not specified");
+			}
+		}	
+		
+		
+		private function getXML(evt:GlobalEvent):void{			
+			//set the XML
+			videoXML = xmlLoad.xmlFile;
+			
+			if(videoXML != null){
+				//attempts validate the node request, if it is not valid the Video process will be stopped
+				//trace("THIS IS THE VIDEO XML RESULT: "+videoXML.VIDEO.(@TITLE==pageName));
+				
+				if(videoXML.VIDEO.(@TITLE==pageName) == "" || videoXML.VIDEO.(@TITLE==pageName) == null || videoXML.VIDEO.(@TITLE==pageName) == undefined  ){
+					try{
+						//stopVideo();
+					}catch(e:Error){
+						if(testing)throw new Error("The XML may not have Loaded or there is no entry for this page");
+					}
+				}else{
+					//initText();
+				}
+				
+				
+			}else{ trace("error: improperly formatted node request or node not found in XML tree");	}	
+			
+		}	
 		
 		/**
 		 *  Initalizes the start of buttons and graphics and initial

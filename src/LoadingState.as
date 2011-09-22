@@ -45,6 +45,7 @@ package
 			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.META_INFO, setStateInitPlaying);
 			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.VIDEO_PLAY, videoPause);
 			
+			
 		}
 		
 		

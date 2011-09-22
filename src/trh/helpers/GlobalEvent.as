@@ -13,6 +13,8 @@ package trh.helpers
 		public static const META_INFO:String = "meta info";
 		public static const FONT_LOADED:String = "font loaded";
 		public static const VIDEO_PLAY:String = "video play";
+		public static const XML_LOADED:String = "xml Loaded";
+		public static const FLASHVARS_LOADED:String = "flashvars Loaded";
 		
 		//public var params:Object;
 	
