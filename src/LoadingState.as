@@ -16,7 +16,8 @@ package
 	{		
 		private var bandwidthChecker:BandwidthChecker;		
 		private var _bandwidthVideoSize:String;
-		private var intervalTimer:Timer = new Timer(500);
+		private var intervalTimer:Timer = new Timer(1000);
+		private var startPlaying:Boolean
 		
 		private var _media:MediaStatePlayer;
 		
@@ -44,13 +45,11 @@ package
 			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.BANDWIDTH_COMPLETE, setBandwidth);	
 			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.META_INFO, setStateInitPlaying);
 			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.VIDEO_PLAY, videoPause);
-			
-			
-		}
+			startPlaying = false;			
+		}		
 		
 		
-		public function applyState():void{	
-				
+		public function applyState():void{				
 			checkBandwidth();
 		}
 	
@@ -60,7 +59,7 @@ package
 					
 		}		
 		
-		public function buttonState():void{	
+		public function buttonState():void{			
 			_media.btnState.checkButtonLoad();			
 		}
 		
@@ -68,9 +67,7 @@ package
 			_media.videoStream.pause();	
 			GlobalDispatcher.GetInstance().removeEventListener(GlobalEvent.VIDEO_PLAY, videoPause);
 			
-		}
-		
-		
+		}		
 		
 		private function setBandwidth(gEvent:GlobalEvent):void{	
 			if(_media.testing)trace("bandwith complete");
@@ -88,15 +85,21 @@ package
 			intervalTimer.start();			
 		}		
 		
-		private function checkVideo(tEvent:TimerEvent):void{
-			_media.updateStatus(new Event(Event.INIT));
-			
-			
+		private function checkVideo(tEvent:TimerEvent):void{			
+			_media.updateStatus(new Event(Event.INIT));			
 			//trace("check video "+ _media.video.currentPercentLoaded);			
 			if(_media.video.currentPercentLoaded >= _media.video.startPlayPercent){				
 				///the resume here with intiate the MetaData event in the VideoStream Object 
-				
-				_media.videoStream.resume();			
+						
+					if(!startPlaying){
+						//after percent load will either start playing from the inital state cue point or it will apply the wating state
+						if(_media.state is WaitingState){
+							_media.state.applyState();
+						}else{
+							_media.videoStream.resume();
+						}				
+						startPlaying = true;
+					}		
 			}
 			
 			if(_media.video.currentPercentLoaded > 99){	
@@ -108,7 +111,7 @@ package
 		private function setStateInitPlaying(evt:Event):void{
 			//once meta data event is triggered then the video is paused to gather the inital cue points
 			GlobalDispatcher.GetInstance().removeEventListener(GlobalEvent.META_INFO, setStateInitPlaying);	
-			this.buttonState();
+			buttonState();
 			_media.getFlashCookie();			
 		}
 		

@@ -2,13 +2,16 @@ package
 {	
 	import flash.display.*;
 	
+	
+	
 	import trh.helpers.LoadBitmap;
 	
 	public class UIGraphics extends MovieClip{		
-			
-		private var _uiButtonArray:Array;		
-		public function UIGraphics(){
+		private var _media:MediaStatePlayer;	
+		public var _uiButtonArray:Array;		
+		public function UIGraphics(msObject:MediaStatePlayer){
 			_uiButtonArray = [];
+			_media = msObject;
 		}
 		
 		public function addBtns(buttons:Array):void{	
@@ -23,7 +26,8 @@ package
 				button.alpha = .10;				
 				_uiButtonArray.push(button);
 				addChild(button);				
-			}	
+			}
+			uiButtonArray();
 		}
 		
 		
@@ -36,8 +40,9 @@ package
 		
 		///////////============setter and getter===================//////////
 		
-		public function get uiButtonArray():Array{
-			return _uiButtonArray;
+		public function uiButtonArray():void{			
+			_media.buttons = _uiButtonArray;
+			
 		}
 		
 	}//end Class

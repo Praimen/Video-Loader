@@ -20,12 +20,9 @@ package
 			_media = msObject;						
 		}
 		
-		public function applyState():void{
-			
-			_media.videoStream.pause();	
-			
-			_media.videoStream.seek(_media.cuePoint.start);
-			
+		public function applyState():void{			
+			_media.videoStream.pause();				
+			_media.videoStream.seek(_media.cuePoint.start);			
 			_media.videoStream.resume();
 			startWaitingTimer();		
 		}		
@@ -62,7 +59,7 @@ package
 		
 		private function waitingLoop(tEvent:TimerEvent):void{
 			//when the video reaches the end cue point get the loop cue point
-			if(_media.videoStream.time > _media.cuePoint.end){				
+			if(_media.videoStream.time >= _media.cuePoint.end){				
 				intervalTimer.removeEventListener(TimerEvent.TIMER,waitingLoop);
 				intervalTimer.stop();
 				_media.getCuePoint("loop");

@@ -1,14 +1,15 @@
 package
 {
+	//http://www.thesuperdentists.com/PortalPreview/tabid/401/Default.aspx
 	import flash.display.SimpleButton;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.TimerEvent;
 	import flash.net.NetStream;
 	import flash.net.SharedObject;
-	import flash.text.*;
 	import flash.system.Capabilities;
-	import flash.utils.*;	
+	import flash.text.*;
+	import flash.utils.*;
 	
 	import trh.helpers.*;
 	
@@ -21,11 +22,12 @@ package
 		private var buttonArray:Array;
 		private var _btnState:ButtonState;
 		private var cuePointObject:Object = new Object();
-		private var flashCookie:FlashCookie = new FlashCookie(2);//expiration in minutes MAX 59
+		private var flashCookie:FlashCookie = new FlashCookie(10);//expiration in minutes MAX 59
 		
 		private var loading:IVideoState;
 		private var _loadVideo:LoadVideo;
 		public var path:String = "http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/";
+		private var URLpath:String;
 		private var playing:IVideoState;
 			
 		private var _state:IVideoState;
@@ -48,56 +50,62 @@ package
 		 * 
 		 * 	
 		 */
-		public function MediaStatePlayer(){				
+		public function MediaStatePlayer(){	
 			loading = new LoadingState(this);
 			waiting = new WaitingState(this);
 			playing = new PlayState(this);
-			_btnState = new ButtonState(this);
-			ui = new UIGraphics();			
+			ui = new UIGraphics(this);			
 			_loadVideo = new LoadVideo(940,550);
-			
-			init();	
-			
+			_btnState = new ButtonState(this);
+			init();//init is proceedurally dependant, and must happen here, this needs to change for stability
+								
 			loaderInfo.addEventListener(Event.COMPLETE, urlVar.loaderComplete);			
-			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.FLASHVARS_LOADED, getFlashVars);
+			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.FLASHVARS_LOADED, getFlashVars);		
 			GlobalDispatcher.GetInstance().addEventListener(GlobalEvent.XML_LOADED, getXML);
+			
 		}
 		
 		private function getFlashVars(evt:GlobalEvent):void{
 			//load Flash Variables from page
 			this.flashVars = urlVar.flashVars;
-			path = flashVars["skinPath"];
-			xmlFile = flashVars["xmlFile"];			
+			if(testing){
+				path = "http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/";
+				xmlFile = "cuePoints.xml";	
+			}else{
+				URLpath = flashVars["skinPath"];
+				xmlFile = flashVars["xmlFile"];	
+			}
 			if(path != null){//check to make sure there is a valid path
 				xmlLoad = new XmlLoader(path + xmlFile);
 			}else{
 				trace("invalid path or path not specified");
 			}
-		}	
+		}
 		
 		
 		private function getXML(evt:GlobalEvent):void{			
 			//set the XML
 			videoXML = xmlLoad.xmlFile;
-			
-			if(videoXML != null){
+			_loadVideo.xmlCueArray = videoXML;
+			if(videoXML != null){			
 				//attempts validate the node request, if it is not valid the Video process will be stopped
-				//trace("THIS IS THE VIDEO XML RESULT: "+videoXML.VIDEO.(@TITLE==pageName));
-				
-				if(videoXML.VIDEO.(@TITLE==pageName) == "" || videoXML.VIDEO.(@TITLE==pageName) == null || videoXML.VIDEO.(@TITLE==pageName) == undefined  ){
+				if(videoXML.CuePoint.@name == undefined ){
 					try{
-						//stopVideo();
+						
+						trace("xml not loaded");
+						
 					}catch(e:Error){
 						if(testing)throw new Error("The XML may not have Loaded or there is no entry for this page");
 					}
 				}else{
-					//initText();
+					trace("videoXML"+videoXML);
+					//	
 				}
 				
 				
 			}else{ trace("error: improperly formatted node request or node not found in XML tree");	}	
 			
-		}	
+		}		
 		
 		/**
 		 *  Initalizes the start of buttons and graphics and initial
@@ -119,9 +127,8 @@ package
 		
 		
 		private function init():void{	
+			loadingState();
 			
-			_state = loading;
-			this.state.applyState();
 			
 			buttonArray = 	[	
 								{name:"pedo1",posX:135, posY:90, image:path+"assets/pedo1.png",imgW:240,imgH:50},
@@ -137,7 +144,7 @@ package
 							];
 			
 			ui.addBtns(buttonArray);
-			_btnArray = ui.uiButtonArray;
+			
 			
 			//percentage number to start playing the video;
 			_loadVideo.startPlayPercent = 8;
@@ -157,8 +164,9 @@ package
 			//intial state is loading state   state = LoadingState.as
 			
 			addEventListener(Event.ENTER_FRAME,updateStatus);
-		}
-		
+			
+			
+		}		
 		
 		/**
 		 *  Sets the string of the video to load
@@ -169,20 +177,25 @@ package
 		public function setLoading(optVideo:String):void{			
 			if(optVideo == "high"){	
 				//_loadVideo.addVideo("http://www.thesuperdentists.com/Portals/_default/Skins/portalSkin/final_400.flv");
-				_loadVideo.addVideo("http://websb1.televoxsites.com/thesuperdentists.com/final_400.flv" + cacheBlocker());
+				_loadVideo.addVideo("http://websb1.televoxsites.com/thesuperdentists.com/final_400.flv") ;//+ cacheBlocker());
 			}
 			if(optVideo == "low"){				
-				_loadVideo.addVideo("http://websb1.televoxsites.com/thesuperdentists.com/final_400.flv" + cacheBlocker());	
+				_loadVideo.addVideo("http://websb1.televoxsites.com/thesuperdentists.com/final_400.flv");// + cacheBlocker());	
 			}
 			
+		}
+		
+		
+		private function loadingState():void{			
+			_state = loading;
+			this.state.applyState();
 		}
 		
 		/**
 		 *  sets the application to the "playing" state  	
 		 */
 		
-		public function playingState():void{				
-			
+		public function playingState():void{			
 			_state = playing;		
 		}
 		
@@ -191,7 +204,6 @@ package
 		 */
 		
 		public function waitingState():void{			
-			
 			_state = waiting;
 			this.getCuePoint("loop");		
 		}
@@ -211,9 +223,7 @@ package
 		 * <p><b>NOTE:</b><em>setting an initial start value that exceeds the amount of video that has been loaded is not advised</em></p>  	
 		 */		
 		private function setInitCueStart():void{
-			//the Shared Object will detect if the video has already played once before(roughly)	
-			
-			
+			//the Shared Object will detect if the video has already played once before(roughly)			
 			//the object contains the inital cue point segment			
 			var initCueName:String = video.cueArray[1].name;
 			var initCuePointStart:Number = video.cueArray[1].time;
@@ -228,16 +238,13 @@ package
 		}
 		
 		public function getFlashCookie():void{
+			
 			trace("flash Cookies: "+ flashCookie.isExpired())
 			if (flashCookie.isExpired()){				
 				this.playingState();	
-				this.setInitCueStart();
-				trace("playing playing state");
-			}else{	
-				trace("playing waiting state");
-				waitingState();
-							
-				
+				this.setInitCueStart();				
+			}else{					
+				waitingState();				
 			}
 		}		
 		
@@ -255,7 +262,8 @@ package
 			var cueArray:Array = video.cueArray;			
 			var cbLen:int = cueArray.length;	
 			for(var i:int = 0; i < cbLen; i++){
-				if(video.cueArray[i].name == cueName){					
+				if(video.cueArray[i].name == cueName){	
+					if(testing)trace("STATE: "+ this.state + "   CUE NAME: "+cueName);
 					cuePointObject = {name:cueName, start:cueArray[i].time, end:cueArray[i+1].time};
 					
 				}else if (cueName == null){
@@ -277,8 +285,10 @@ package
 		 * 	the video has fully loaded it will remove the handler  	
 		 */		
 		public function updateStatus(evt:Event):void{
+			if(testing)book.statusTxt.text = String(this._state +" : "+ videoStream.time);
 			
-				book.statusTxt.text = String(video.currentPercentLoaded+"%");
+			book.statusTxt.text = String(video.currentPercentLoaded+"%");
+			
 				if(video.currentPercentLoaded > 99 ){
 					book.statusTxt.text = "";					
 					removeEventListener(Event.ENTER_FRAME, updateStatus);								
@@ -286,18 +296,7 @@ package
 				}			
 		}
 		
-		private function cacheBlocker():String {
-			if ((Capabilities.playerType == "External" || 
-				Capabilities.playerType == "StandAlone")) {
-				return "";
-			}
-			else {
-				var date:Date = new Date();
-				var time:Number = date.getTime();
-				return "?t=" + time.toString();
-			}
-		}
-		
+				
 		
 ///////////////////////////////setters and getters//////////////////////
 		
@@ -307,6 +306,11 @@ package
 		
 		public function get buttons():Array{			
 			return _btnArray;
+		}
+		
+		//possibly move this set to modifier method
+		public function set buttons(value:Array):void{	
+			_btnArray = value;
 		}		
 		
 		public function get video():LoadVideo{

@@ -8,7 +8,7 @@
 	public class ButtonState extends Sprite	{
 		
 		private var _media:MediaStatePlayer;
-		private var intervalTimer:Timer = new Timer(200);
+		private var intervalTimer:Timer
 		private var checkButtonArray:Array;
 		private var _activated:Array;
 		private var btnActiveAlpha:Number = .5;
@@ -24,9 +24,9 @@
 		
 		public function ButtonState(msObject:MediaStatePlayer){
 			_media = msObject;		
-		
-			checkButtonArray = [];
-			
+			intervalTimer = new Timer(200);
+			//checkButtonArray = [];
+			intervalTimer.addEventListener(TimerEvent.TIMER,checkButtonActivation);
 		}
 		
 		
@@ -53,9 +53,9 @@
 				var button:Sprite = checkButtonArray[i];
 				
 					for (var j:int = 0; j< mediaLen; j++){	
-						var mediaArray:Array = _media.video.cueArray[j];	
+						var mediaArray:Object = _media.video.cueArray[j];	
 						var buttonName:String = String(mediaArray.name);
-						var buttonTime:int = int(mediaArray.time);	
+						var buttonTime:Number = Number(mediaArray.time);	
 							if(buttonName == button.name){
 							
 								if ((buttonTime < int(_media.video.timeLoaded)) && (button.name == buttonName)){
@@ -82,7 +82,7 @@
 			
 			
 			
-			if(checkButtonArray.length == 0){
+			if(!checkButtonArray.length){
 				intervalTimer.stop();
 				trace("checkbutton array: "+ checkButtonArray.length);
 				trace("activeBtnArray array: "+ this.activeBtnArray.length);
@@ -90,7 +90,7 @@
 				
 				intervalTimer.removeEventListener(TimerEvent.TIMER,checkButtonActivation);
 				intervalTimer = null;
-				checkButtonArray = null;		
+				//checkButtonArray = null;		
 			}
 			
 		}		
@@ -102,10 +102,11 @@
 		 * timer for the <code>checkButtonActivation</code></p>	
 		 * 	
 		 */	
-		public function checkButtonLoad():void{	
+		public function checkButtonLoad():void{
+			
 			checkButtonArray = _media.buttons;
-			_activated = [];
-			intervalTimer.addEventListener(TimerEvent.TIMER,checkButtonActivation);
+			trace("checkButtonArray: "+ _media.buttons);
+			_activated = [];			
 			intervalTimer.start();			
 		}
 		

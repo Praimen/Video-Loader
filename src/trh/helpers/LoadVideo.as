@@ -26,6 +26,7 @@ package trh.helpers
 		private var videoURL:String;
 		private var _duration:Number;
 		private var intervalTimer:Timer = new Timer(500);
+		private var _xmlCuePoints:XML;
 			
 		public function LoadVideo(width:Number,height:Number)
 		{
@@ -77,7 +78,7 @@ package trh.helpers
 		}
 		
 		private function metaDataHandler(infoObject:Object):void {
-			_cuePoints = [];
+			/*_cuePoints = [];
 			for (var propName:String in infoObject) {				
 				if(propName == "cuePoints"){					
 					for(var i:int = 0; i < infoObject.cuePoints.length; i++){
@@ -89,6 +90,24 @@ package trh.helpers
 			}
 			
 			duration = infoObject.duration;
+			GlobalDispatcher.GetInstance().dispatchEvent(new GlobalEvent(GlobalEvent.META_INFO));*/
+			
+		}
+		
+		private function xmlHandler():void {
+			_cuePoints = [];
+				var xmlObject:XML = this._xmlCuePoints;				
+				for(var i:int = 0; i < xmlObject.CuePoint.length(); i++){
+					var cuePoint:XML = xmlObject.CuePoint[i];
+					var cueName:String = String(cuePoint.@name);
+					var cueType:String = String(cuePoint.@type);
+					var cueTime:Number = Number(cuePoint.@time);
+					var oCue:Object = {name:cueName, type:cueType, time:cueTime};
+					trace("\t\t" + i + ": " + oCue.name + ", " + oCue.type+ ", " + oCue.time);								
+					_cuePoints[i] = oCue;
+				}
+				
+			duration = 225.542;
 			GlobalDispatcher.GetInstance().dispatchEvent(new GlobalEvent(GlobalEvent.META_INFO));
 			
 		}
@@ -163,6 +182,11 @@ package trh.helpers
 		
 		public function get cueArray():Array{			
 			return _cuePoints;
+		}
+		
+		public function set xmlCueArray(value:XML):void{			
+			_xmlCuePoints = value;
+			this.xmlHandler();
 		}
 		
 		
